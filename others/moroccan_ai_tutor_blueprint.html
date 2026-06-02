@@ -1,0 +1,201 @@
+
+<h2 class="sr-only">Moroccan AI Tutor Blueprint: Models, Datasets, and Strategy</h2>
+
+<style>
+  .section { margin-bottom: 2rem; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .card.featured { border: 2px solid #1D9E75; }
+  .card-icon { font-size: 20px; margin-bottom: 8px; color: var(--color-text-secondary); }
+  .card-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 8px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; margin-right: 4px; margin-top: 4px; }
+  .badge-teal { background: #E1F5EE; color: #0F6E56; }
+  .badge-blue { background: #E6F1FB; color: #185FA5; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .badge-purple { background: #EEEDFE; color: #534AB7; }
+  .badge-coral { background: #FAECE7; color: #993C1D; }
+  .badge-gray { background: #F1EFE8; color: #5F5E5A; }
+  .tier-label { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); display: inline-block; margin-bottom: 10px; }
+  .tier-1 { background: #E1F5EE; color: #0F6E56; }
+  .tier-2 { background: #FAEEDA; color: #854F0B; }
+  .tier-3 { background: #E6F1FB; color: #185FA5; }
+  .dataset-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .dataset-row:last-child { border-bottom: none; }
+  .dataset-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .dot-teal { background: #1D9E75; }
+  .dot-blue { background: #378ADD; }
+  .dot-amber { background: #EF9F27; }
+  .dot-purple { background: #7F77DD; }
+  .dataset-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .dataset-meta { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .strategy-step { display: flex; gap: 14px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: flex-start; }
+  .strategy-step:last-child { border-bottom: none; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; background: #E1F5EE; color: #0F6E56; }
+  .step-content { flex: 1; }
+  .step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .step-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .warn-box { background: #FAEEDA; border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: #633806; margin-top: 10px; line-height: 1.6; }
+</style>
+
+<div style="padding: 1rem 0;">
+
+  <div class="section">
+    <div class="section-title"><i class="ti ti-cpu" aria-hidden="true"></i> Layer 1 — PDF & document understanding</div>
+    <div class="card-grid">
+      <div class="card featured">
+        <div class="card-icon"><i class="ti ti-file-text" aria-hidden="true"></i></div>
+        <div class="card-name">Qwen2.5-VL-7B</div>
+        <div class="card-desc">Reads PDFs, textbook images, scanned exercises. Best multilingual vision-language model at this size.</div>
+        <span class="badge badge-teal">Recommended</span>
+        <span class="badge badge-blue">Arabic + French</span>
+        <span class="badge badge-gray">7B params</span>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-scan" aria-hidden="true"></i></div>
+        <div class="card-name">PaddleOCR-VL-0.9B</div>
+        <div class="card-desc">Ultralight OCR for 109 languages. Extracts text, tables, formulas from Arabic & French PDFs.</div>
+        <span class="badge badge-teal">Free / tiny</span>
+        <span class="badge badge-blue">Ar + Fr + math formulas</span>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-file-code" aria-hidden="true"></i></div>
+        <div class="card-name">QARI-OCR v0.2</div>
+        <div class="card-desc">State-of-the-art Arabic OCR. Handles tashkeel, diverse fonts, handwritten text. WER 0.16.</div>
+        <span class="badge badge-purple">Arabic specialist</span>
+        <span class="badge badge-gray">Open source</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><i class="ti ti-math" aria-hidden="true"></i> Layer 2 — reasoning (maths, physics, science)</div>
+    <div class="card-grid">
+      <div class="card featured">
+        <div class="card-icon"><i class="ti ti-brain" aria-hidden="true"></i></div>
+        <div class="card-name">DeepSeek-R1-Distill-Qwen-14B</div>
+        <div class="card-desc">Best balance for your use case. Step-by-step reasoning, strong in Arabic + French. Fine-tunable on Colab/RunPod.</div>
+        <span class="badge badge-teal">Best for fine-tuning</span>
+        <span class="badge badge-amber">14B — fits T4 GPU Q4</span>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-calculator" aria-hidden="true"></i></div>
+        <div class="card-name">Qwen2.5-Math-7B</div>
+        <div class="card-desc">Purpose-built for maths. Covers algebra, geometry, calculus — aligned with K-12 to Bac level.</div>
+        <span class="badge badge-blue">Math specialist</span>
+        <span class="badge badge-gray">7B params</span>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-atom" aria-hidden="true"></i></div>
+        <div class="card-name">Qwen3-8B (thinking mode)</div>
+        <div class="card-desc">Strong physics & science reasoning. Dual thinking/non-thinking mode. Arabic + French + 100 langs.</div>
+        <span class="badge badge-purple">Science + logic</span>
+        <span class="badge badge-teal">Apache 2.0</span>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-flask" aria-hidden="true"></i></div>
+        <div class="card-name">Arabic-DeepSeek-R1</div>
+        <div class="card-desc">New SOTA on Arabic LLM leaderboard. CoT distilled with cultural grounding. Grammar, reasoning, safety.</div>
+        <span class="badge badge-purple">Arabic SOTA 2025</span>
+        <span class="badge badge-coral">Research paper</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><i class="ti ti-language" aria-hidden="true"></i> Layer 3 — language & humanities (Arabic MSA, French, History)</div>
+    <div class="card-grid">
+      <div class="card featured">
+        <div class="card-icon"><i class="ti ti-book" aria-hidden="true"></i></div>
+        <div class="card-name">Llama-3.3-70B-Instruct</div>
+        <div class="card-desc">Best for language arts, essay feedback, literary analysis in Arabic & French. 128K context for long texts.</div>
+        <span class="badge badge-teal">Via cloud (too big local)</span>
+        <span class="badge badge-blue">128K context</span>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-message" aria-hidden="true"></i></div>
+        <div class="card-name">Qwen3-14B</div>
+        <div class="card-desc">Strong general tutor. Answers literature, history, geography questions in MSA and French. Runs on Colab T4.</div>
+        <span class="badge badge-amber">Best local option</span>
+        <span class="badge badge-gray">14B params</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><i class="ti ti-database" aria-hidden="true"></i> Datasets — what exists & what you must build</div>
+
+    <div style="margin-bottom: 12px;"><span class="tier-label tier-1">✓ Ready on Hugging Face</span></div>
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 4px 16px; margin-bottom: 16px;">
+      <div class="dataset-row">
+        <div class="dataset-dot dot-teal"></div>
+        <div><div class="dataset-name">meta-math/MetaMathQA</div><div class="dataset-meta">395K math QA pairs with chain-of-thought. K-12 to competition level. Use for fine-tuning math reasoning.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-teal"></div>
+        <div><div class="dataset-name">SciInstruct (Tsinghua)</div><div class="dataset-meta">254K science instructions (physics, chemistry, biology) with self-verified reasoning steps. Strong for Bac science.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-blue"></div>
+        <div><div class="dataset-name">ArabicaQA (SIGIR 2024)</div><div class="dataset-meta">Comprehensive Arabic QA — machine reading comprehension + open domain. Good for Arabic subject Q&A.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-blue"></div>
+        <div><div class="dataset-name">wiki_qa_ar (HuggingFace)</div><div class="dataset-meta">Arabic Wikipedia QA pairs. Good for general knowledge (history, geography, science) in Arabic.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-purple"></div>
+        <div><div class="dataset-name">ajibawa-2023/Maths-Grade-School</div><div class="dataset-meta">Grade school math word problems with full solutions. Perfect for primary + collège levels.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-amber"></div>
+        <div><div class="dataset-name">HuggingFaceH4/aime_2024</div><div class="dataset-meta">High school math competition problems. Use for Bac Maths / SM track evaluation and challenge sets.</div></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 12px;"><span class="tier-label tier-2">⚠ Must be built / scraped by you</span></div>
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 4px 16px; margin-bottom: 8px;">
+      <div class="dataset-row">
+        <div class="dataset-dot dot-amber"></div>
+        <div><div class="dataset-name">Moroccan Bac national exams corpus</div><div class="dataset-meta">Scrape from schoolfibers.com, chtoukaphysique.com, 9rayti.com, sigmaths.net — all have PDFs of past exams with corrections (2003–2025). Convert to QA pairs.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-amber"></div>
+        <div><div class="dataset-name">Cadre de référence (frame of reference)</div><div class="dataset-meta">Official MEN documents define what's in each exam. Download from men.gov.ma for each track (SM, PC, SVT, SGC, lettres). Convert to structured curriculum maps.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-amber"></div>
+        <div><div class="dataset-name">Manhaj.ma / 9rayti.com course content</div><div class="dataset-meta">Rich Moroccan pedagogical content per subject and level. Can be scraped into (course → summary → exercise → answer) structured datasets.</div></div>
+      </div>
+      <div class="dataset-row">
+        <div class="dataset-dot dot-amber"></div>
+        <div><div class="dataset-name">Collège & primaire level content</div><div class="dataset-meta">Almost no HuggingFace dataset covers Moroccan collège/primaire. You'll need to create this from textbooks, tawjihnet.net, or Manhaj.</div></div>
+      </div>
+    </div>
+    <div class="warn-box"><i class="ti ti-alert-triangle" aria-hidden="true"></i> No ready-made Moroccan school curriculum dataset exists on Hugging Face. This is both the biggest gap and your biggest competitive advantage if you build it.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><i class="ti ti-route" aria-hidden="true"></i> Recommended build strategy</div>
+    <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 4px 16px;">
+      <div class="strategy-step">
+        <div class="step-num">1</div>
+        <div class="step-content"><div class="step-title">Start with Qwen2.5-VL-7B as your PDF parser</div><div class="step-desc">Use it on Kaggle/Colab to extract Moroccan exam PDFs into structured text. This becomes your raw dataset.</div></div>
+      </div>
+      <div class="strategy-step">
+        <div class="step-num">2</div>
+        <div class="step-content"><div class="step-title">Fine-tune DeepSeek-R1-Distill-Qwen-14B</div><div class="step-desc">Use LoRA (via Unsloth library) on Moroccan exam QA pairs. This gives you a reasoning model that knows the Moroccan curriculum.</div></div>
+      </div>
+      <div class="strategy-step">
+        <div class="step-num">3</div>
+        <div class="step-content"><div class="step-title">Add RAG (Retrieval-Augmented Generation)</div><div class="step-desc">Index your course PDFs with a vector database. The model retrieves the right cours before answering — no hallucination about Moroccan-specific content.</div></div>
+      </div>
+      <div class="strategy-step">
+        <div class="step-num">4</div>
+        <div class="step-content"><div class="step-title">Build the Moroccan curriculum dataset in parallel</div><div class="step-desc">Scrape + clean national exam PDFs → convert to (question, reasoning steps, answer) format → push to HuggingFace. This is your most valuable asset.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>

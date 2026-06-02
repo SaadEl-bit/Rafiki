@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduAI Maroc - Adaptive Learning Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .tab-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-btn.active {
+            border-bottom-width: 4px;
+            border-color: #3b82f6;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .flow-card {
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+    <!-- Chosen Palette: Warm neutrals (slate-50) background, clean white cards, professional blue (blue-500, blue-700) for primary actions and accents, subtle green for data/success indicators. -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive "Product Architecture Dashboard". It translates the conceptual requirements into a tangible interface. The structure uses a tabbed navigation approach to separate the three main personas/needs outlined in the report: 1. Student Experience (Adaptive learning flow), 2. Educator/School Tools (Management & Analytics), and 3. AI & Data Infrastructure (The user's stated immediate priority). This modular design allows users to explore complex interrelated systems without being overwhelmed. Interactive mockups (dropdowns, charts) simulate the intended functionality. -->
+    <!-- Visualization & Content Choices: 
+         - Goal: Illustrate intended Data Corpus. Viz: Doughnut Chart (Chart.js). Interaction: Hover tooltips. Justification: Best shows proportions of the required Moroccan datasets (Exams, Pedagogy, etc.).
+         - Goal: Illustrate Teacher Analytics. Viz: Bar Chart (Chart.js). Interaction: Hover tooltips. Justification: Clear comparison of student progression across levels.
+         - Goal: Show Curriculum Selection Flow. Viz: Interactive Form + Dynamic Text. Interaction: Dropdown selection updates content below. Justification: Simulates the core UI mechanics of selecting level -> specialization -> getting content.
+         - Methods confirm NO SVG/Mermaid. Icons rely on Unicode (📚, ⚙️, 🧑‍🏫). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased h-screen flex flex-col">
+
+    <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">🇲🇦</span>
+                    <span class="font-bold text-xl text-slate-800 tracking-tight">EduAI <span class="text-blue-600">Maroc</span> Platform</span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm text-slate-500">
+                    <span>Lang: EN (Dev Mode)</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Concept Prototype</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow overflow-auto p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <h1 class="text-3xl font-bold text-slate-900 mb-4">Adaptive AI Guide Architecture</h1>
+                <p class="text-slate-600 text-lg leading-relaxed max-w-4xl">
+                    This interactive dashboard outlines the structural logic and data requirements for the Moroccan educational AI assistant. It encompasses features from Primary to High School, integrating the core pedagogical framework, adaptive student leveling, and educator analytics, while highlighting immediate AI model and dataset priorities.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="border-b border-slate-200">
+                    <nav class="flex -mb-px px-6" aria-label="Tabs">
+                        <button onclick="switchTab('ai-engine')" id="tab-ai-engine" class="tab-btn active w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700">
+                            <span class="text-xl block mb-1">⚙️</span>
+                            Models & Data Engine
+                        </button>
+                        <button onclick="switchTab('student-flow')" id="tab-student-flow" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700">
+                            <span class="text-xl block mb-1">🎓</span>
+                            Student Experience
+                        </button>
+                        <button onclick="switchTab('teacher-dash')" id="tab-teacher-dash" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700">
+                            <span class="text-xl block mb-1">🧑‍🏫</span>
+                            Private School / Teacher
+                        </button>
+                    </nav>
+                </div>
+
+                <div class="p-6 md:p-8 min-h-[500px]">
+                    
+                    <div id="content-ai-engine" class="fade-in block">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Immediate Priorities: AI Models & Datasets</h2>
+                            <p class="text-slate-600">Overview of the specific technological requirements to power the platform, focusing on Moroccan curriculum data and specialized logic solvers.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div class="flow-card bg-slate-50 p-5 rounded-r-lg shadow-sm">
+                                    <h3 class="font-bold text-lg text-slate-800 mb-2">Required AI Models</h3>
+                                    <ul class="space-y-2 text-slate-600">
+                                        <li><span class="font-semibold text-blue-600">►</span> <b>PDF Analysis & OCR:</b> Ability to ingest user-uploaded courses, exercises, and scanned exams (French/Arabic/Math symbols).</li>
+                                        <li><span class="font-semibold text-blue-600">►</span> <b>Logic Resolution:</b> Specialized models for Math, Physics, and Science step-by-step problem solving.</li>
+                                        <li><span class="font-semibold text-blue-600">►</span> <b>Multilingual NLP:</b> Strong capabilities in Formal Arabic (فصحى), French, and English for curriculum comprehension.</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="flow-card bg-slate-50 p-5 rounded-r-lg shadow-sm border-l-emerald-500">
+                                    <h3 class="font-bold text-lg text-slate-800 mb-2">Targeted Datasets</h3>
+                                    <ul class="space-y-2 text-slate-600">
+                                        <li><span class="font-semibold text-emerald-600">►</span> <b>Moroccan Curriculum:</b> Complete courses, exercises, and exams (Primary → High School).</li>
+                                        <li><span class="font-semibold text-emerald-600">►</span> <b>Pedagogical Frameworks:</b> (الإطار المرجعي + البيداغوجية) to ensure AI alignment with official standards.</li>
+                                        <li><span class="font-semibold text-emerald-600">►</span> <b>Domain Knowledge:</b> Moroccan history, geography, and Islamic education specifics.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
+                                <h3 class="font-bold text-slate-700 mb-4 text-center">Intended Dataset Composition</h3>
+                                <div class="chart-container">
+                                    <canvas id="datasetChart"></canvas>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-4 text-center">Proposed distribution of training data to ensure comprehensive coverage of the Moroccan system.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-student-flow" class="fade-in hidden">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Adaptive Student Interaction</h2>
+                            <p class="text-slate-600">Simulate how a student accesses structured programs, specific options, and receives tailored exercises or uploads their own documents for resolution.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <div class="lg:col-span-1 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <h3 class="font-bold text-lg mb-4 border-b pb-2">1. Program Selection</h3>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Education Level</label>
+                                        <select id="levelSelect" class="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                                            <option value="">Select Level...</option>
+                                            <option value="primary">Primary School</option>
+                                            <option value="middle">Middle School (Collège)</option>
+                                            <option value="high">High School (Lycée)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Option / Specialization</label>
+                                        <select id="optionSelect" class="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" disabled>
+                                            <option value="">Select Option...</option>
+                                        </select>
+                                    </div>
+                                    <button id="fetchProgramBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 disabled:opacity-50">
+                                        Load Program
+                                    </button>
+                                </div>
+
+                                <div class="mt-6 pt-4 border-t border-slate-200">
+                                    <h4 class="text-sm font-bold text-slate-600 mb-2">OR: Custom Upload</h4>
+                                    <div class="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:bg-slate-100 cursor-pointer transition">
+                                        <span class="text-2xl block mb-1">📄</span>
+                                        <p class="text-xs text-slate-500">Upload Course / Exam PDF<br>(Requires Parsing Model)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-2 bg-white border border-slate-200 p-6 rounded-xl shadow-inner relative min-h-[400px]">
+                                <h3 class="font-bold text-lg mb-4 text-slate-800">2. Generated Curriculum & Adaptive Content</h3>
+                                
+                                <div id="programResults" class="hidden h-full flex flex-col">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h4 id="resultTitle" class="text-xl font-bold text-blue-700"></h4>
+                                            <p id="resultSubtitle" class="text-sm text-slate-500"></p>
+                                        </div>
+                                        <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded border border-emerald-200">Aligned: الإطار المرجعي</span>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4 mb-6">
+                                        <button class="p-3 bg-slate-50 border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 text-left transition">
+                                            <span class="block font-bold">📚 Core Courses</span>
+                                            <span class="text-xs text-slate-500">Official syllabus</span>
+                                        </button>
+                                        <button class="p-3 bg-slate-50 border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 text-left transition">
+                                            <span class="block font-bold">📝 Exercises</span>
+                                            <span class="text-xs text-slate-500">With AI solutions</span>
+                                        </button>
+                                        <button class="p-3 bg-slate-50 border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 text-left transition">
+                                            <span class="block font-bold">🎓 Exam Archive</span>
+                                            <span class="text-xs text-slate-500">Past papers dataset</span>
+                                        </button>
+                                        <button class="p-3 bg-indigo-50 border border-indigo-200 rounded hover:border-indigo-400 text-left transition shadow-sm">
+                                            <span class="block font-bold text-indigo-700">🤖 AI Level Test</span>
+                                            <span class="text-xs text-indigo-600">Determine current skill</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-auto bg-slate-800 rounded-lg p-4 font-mono text-sm text-green-400 overflow-hidden relative">
+                                        <div class="absolute top-0 right-0 bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded-bl">AI Logic Solver Engine</div>
+                                        <p class="mb-1 text-slate-400">> User requests explanation for selected topic...</p>
+                                        <p class="mb-1">> Engaging specific model (Math/Physics/Language)...</p>
+                                        <p id="aiConsoleOutput" class="text-white mt-2">Ready for query.</p>
+                                    </div>
+                                </div>
+
+                                <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 h-full">
+                                    <span class="text-4xl mb-2">🔍</span>
+                                    <p>Select a level and option to generate the program</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="content-teacher-dash" class="fade-in hidden">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Private School / Teacher Tools</h2>
+                            <p class="text-slate-600">Subscription-based features allowing educators to create classrooms, invite students, and view AI-analyzed development levels to adapt teaching tools.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center">
+                                <span class="text-3xl mr-4">🏫</span>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Classrooms</h4>
+                                    <p class="text-2xl font-light text-blue-600">4 Active</p>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 flex items-center">
+                                <span class="text-3xl mr-4">🧑‍🎓</span>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Total Students</h4>
+                                    <p class="text-2xl font-light text-emerald-600">128</p>
+                                </div>
+                            </div>
+                            <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex items-center">
+                                <span class="text-3xl mr-4">📈</span>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Avg Level Growth</h4>
+                                    <p class="text-2xl font-light text-amber-600">+14%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-lg text-slate-800">Classroom Level Assessment (AI Detected)</h3>
+                                <select class="text-sm border-slate-300 rounded p-1 border">
+                                    <option>Class: 2 Bac PC - Group A</option>
+                                    <option>Class: 1 Bac SM - Group B</option>
+                                </select>
+                            </div>
+                            
+                            <div class="chart-container" style="height: 350px;">
+                                <canvas id="teacherChart"></canvas>
+                            </div>
+                            <p class="text-sm text-slate-500 mt-4 text-center italic">
+                                Note: Data is generated based on initial student build-up questions and ongoing exercise resolution. Teachers can use this to adapt pedagogical tools.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let datasetChartInstance = null;
+        let teacherChartInstance = null;
+
+        const mockData = {
+            levels: {
+                primary: [
+                    { id: 'general', name: 'General Primary (Arabic/French/Math/Science)' }
+                ],
+                middle: [
+                    { id: 'general_ar', name: 'General (Arabic Track)' },
+                    { id: 'biof', name: 'BIOF (French Track)' }
+                ],
+                high: [
+                    { id: 'sm', name: 'Sciences Mathématiques (A/B)' },
+                    { id: 'pc', name: 'Sciences Physiques (PC)' },
+                    { id: 'svt', name: 'Sciences de la Vie et de la Terre (SVT)' },
+                    { id: 'eco', name: 'Sciences Economiques' },
+                    { id: 'letters', name: 'Lettres et Sciences Humaines' }
+                ]
+            },
+            responses: {
+                'sm': "> Loading framework for Sciences Mathématiques...\n> Compiling advanced logic resolution datasets...\n> 142 Exams found.\n> Ready to generate adaptive exercises based on national pedagogy.",
+                'pc': "> Loading framework for Sciences Physiques...\n> Engaging physics/chemistry resolution models...\n> Fetching course documents in French (BIOF)...\n> Ready.",
+                'general': "> Loading Primary Education pedagogy...\n> Initializing interactive build-up questions for level detection...\n> Connecting to language models (Arabic/French) for basic literacy tasks."
+            }
+        };
+
+        function initCharts() {
+            const datasetCtx = document.getElementById('datasetChart');
+            if (datasetCtx && !datasetChartInstance) {
+                datasetChartInstance = new Chart(datasetCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Exams Archive', 'Course Materials', 'Pedagogical Frameworks', 'User Uploaded Data', 'Logic Resolution Rules'],
+                        datasets: [{
+                            data:,
+                            backgroundColor: [
+                                '#3b82f6', '#10b981', '#f59e0b', '#64748b', '#8b5cf6'
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ' + context.label + ': ' + context.parsed + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const teacherCtx = document.getElementById('teacherChart');
+            if (teacherCtx && !teacherChartInstance) {
+                teacherChartInstance = new Chart(teacherCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Math', 'Physics', 'French', 'Philosophy', 'English'],
+                        datasets: [
+                            {
+                                label: 'Initial AI Assessment (Start of Year)',
+                                data:,
+                                backgroundColor: '#94a3b8',
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Current Level (Post-Adaptive Exercises)',
+                                data:,
+                                backgroundColor: '#3b82f6',
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: { display: true, text: 'Competency Score (%)' }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.getElementById('content-' + tabId).classList.add('block');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'ai-engine' || tabId === 'teacher-dash') {
+                setTimeout(initCharts, 50);
+            }
+        }
+
+        document.getElementById('levelSelect').addEventListener('change', function(e) {
+            const optionSelect = document.getElementById('optionSelect');
+            const level = e.target.value;
+            
+            optionSelect.innerHTML = '<option value="">Select Option...</option>';
+            document.getElementById('fetchProgramBtn').disabled = true;
+
+            if (level && mockData.levels[level]) {
+                optionSelect.disabled = false;
+                mockData.levels[level].forEach(opt => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = opt.id;
+                    optionEl.textContent = opt.name;
+                    optionSelect.appendChild(optionEl);
+                });
+            } else {
+                optionSelect.disabled = true;
+            }
+        });
+
+        document.getElementById('optionSelect').addEventListener('change', function(e) {
+            document.getElementById('fetchProgramBtn').disabled = !e.target.value;
+        });
+
+        document.getElementById('fetchProgramBtn').addEventListener('click', function() {
+            const levelSelect = document.getElementById('levelSelect');
+            const optionSelect = document.getElementById('optionSelect');
+            
+            const levelText = levelSelect.options[levelSelect.selectedIndex].text;
+            const optionText = optionSelect.options[optionSelect.selectedIndex].text;
+            const optionVal = optionSelect.value;
+
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('programResults').classList.remove('hidden');
+            
+            document.getElementById('resultTitle').textContent = optionText;
+            document.getElementById('resultSubtitle').textContent = `Level: ${levelText}`;
+
+            const aiOutput = document.getElementById('aiConsoleOutput');
+            aiOutput.textContent = "Analyzing curriculum requirements...";
+            
+            setTimeout(() => {
+                aiOutput.textContent = mockData.responses[optionVal] || "> Generating custom path based on selection...\n> Formatting standard pedagogy modules.";
+            }, 600);
+        });
+
+        window.onload = function() {
+            initCharts(); 
+        };
+    </script>
+</body>
+</html>
