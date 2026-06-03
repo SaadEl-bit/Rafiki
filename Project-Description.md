@@ -122,19 +122,23 @@ The model selected (`Qwen2.5` family) already has strong pre-trained knowledge o
 ### **Phase 2 — RAG Knowledge Base**
 > **Objective:** Make the AI able to retrieve the exact relevant lesson when a student asks a question.
 
-**Tools:** `ChromaDB`, `sentence-transformers` multilingual embedding model, CPU (Kaggle or local)
+**Concepts:**
+* **Embeddings:** The `sentence-transformers` model converts extracted text into a list of numbers (a vector) where similar meanings have similar numbers.
+* **ChromaDB:** A specialized Vector Database that stores these vectors and quickly searches for the closest match to a student's question.
 
-**MVP Target:** Index all chunks from the 5 Phase 1 PDFs into a single persistent ChromaDB.
+**Tools:** `ChromaDB`, `sentence-transformers/all-MiniLM-L6-v2`, CPU (Kaggle)
+
+**MVP Target:** Index all chunks from the Phase 1 HuggingFace dataset into a single persistent ChromaDB.
 
 **Actions:**
-1. Load all Markdown chunks from the HuggingFace dataset.
-2. Use the multilingual embedding model to convert each chunk to a vector.
-3. Store all vectors + original text + metadata (subject, level, chapter) in ChromaDB.
-4. Write and test a retrieval function: given a student query, return the top-3 most relevant chunks.
+1. Load all Markdown chunks from the HuggingFace dataset (e.g., `Saad-Elouakate/AI-Adaptive-Learning`).
+2. Use the multilingual embedding model to convert each chunk's `content_string` to a vector.
+3. Store all vectors + original text + metadata (subject, level, chapter) in a local ChromaDB folder.
+4. Write and test a retrieval function: given a student query, return the top-5 most relevant chunks.
 5. Save the ChromaDB collection to disk — this is the **pre-built KB that ships with the Gradio app**.
-6. Upload the ChromaDB artifact to HuggingFace as a dataset.
+6. Upload the ChromaDB artifact to a **new HuggingFace dataset** (e.g., `Saad-Elouakate/AI-Adaptive-Learning-Index`).
 
-**Success Condition:** Query `"How to find the derivative of a polynomial?"` or `"Loi de Newton?"` → returns the correct lesson chunks from the right subject. ✅
+**Success Condition:** Query `"How to find the derivative of a polynomial?"` or `"Loi de Newton?"` → returns the correct lesson chunks from the right subject. 
 
 ---
 

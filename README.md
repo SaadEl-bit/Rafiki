@@ -155,6 +155,16 @@ src/
                                    --no-vlm   CPU text-only (no GPU needed)
                                    --push-to-hub
                                    --subject / --level overrides
+
+    phase2_rag/                  Phase 2 Python package (RAG Knowledge Base)
+    ├── __init__.py              Exports RAGRetriever
+    ├── config.py                Settings (embedding model, ChromaDB path, HF repos)
+    ├── embedder.py              build_index(): downloads HF chunks, embeds them,
+                                 and inserts into ChromaDB collections per subject
+    ├── retriever.py             RAGRetriever: loads ChromaDB, embeds student questions,
+                                 and returns top K relevant chunks
+    └── main.py                  Kaggle entry point to build the index and push to Hub
+                                   python -m src.phase2_rag.main --push-to-hub
 ```
 
 
@@ -164,8 +174,8 @@ src/
 
 | Phase | Objective | Tools | Status |
 |---|---|---|---|
-| **1 — PDF Extraction** | 2Bac PDFs (Maths/Physics/English) → Markdown chunks | Qwen2.5-VL-2B, PyMuPDF, Kaggle T4 | 🟡 In Progress |
-| **2 — RAG Knowledge Base** | Embed all chunks → persistent ChromaDB (pre-built KB) | multilingual-MiniLM-L12-v2, ChromaDB | ⬜ Not started |
+| **1 — PDF Extraction** | 2Bac PDFs (Maths/Physics/English) → Markdown chunks | Qwen2.5-VL-2B, PyMuPDF, Kaggle T4 | ✅ Complete |
+| **2 — RAG Knowledge Base** | Embed all chunks → persistent ChromaDB (pre-built KB) | multilingual-MiniLM-L12-v2, ChromaDB | 🟡 In Progress |
 | **3 — Fine-Tuning** | Train Qwen on 2Bac Q&A style (French/English) | Qwen2.5-1.5B, LoRA, Unsloth, Kaggle T4 | ⬜ Not started |
 | **4 — Gradio App** | Q&A Chat + Exercise Correction (working); other tabs as UI placeholders | Gradio, HuggingFace Spaces | ⬜ Not started |
 | **5 — Integration** | Wire all phases, end-to-end test with real 2Bac questions | All of the above | ⬜ Not started |
@@ -174,37 +184,29 @@ src/
 
 ## Current Status
 
-**Active phase:** Phase 1 — PDF Extraction Pipeline
+**Active phase:** Phase 2 — RAG Knowledge Base
 
 ### ✅ Completed
-- Project architecture finalised (`Project-Description.md`)
-- HuggingFace Space created (Gradio, CPU Basic, public)
-- GitHub repository initialised
-- Raw Bac PDF dataset assembled (`Document-Data-Set/`)
-- **Kaggle pipeline script** written and tested:
-  - `kaggle/pdf_to_markdown_pipeline.py` — processes PDFs with Qwen2.5-VL-2B on T4
-  - Tested on 6-page probability PDF → `kaggle/output/` contains verified results
-- **Local `src/` module** created (production-quality, modular code):
-  - `src/phase1_extraction/` — 6-module Python package
-  - CPU fallback mode (`--no-vlm`) for local testing without a GPU
-  - Supports batch-processing a folder of PDFs
-  - Auto-detects subject/level from filename conventions
-  - Enriched chunk schema with unique `chunk_id`s for Phase 2 traceability
-
-### 🔴 Previous Blocker (resolved)
-- **OOM on T4:** Original script used `Qwen2.5-VL-7B-Instruct` in bfloat16 → 14.5 GB VRAM, only 0.5 GB headroom.
-- **Fix:** Switched to `Qwen2.5-VL-2B-Instruct` → ~4 GB VRAM, 12 GB headroom for images. ✅
+- **Phase 1 (Extraction):** Successfully extracted all 2Bac PDFs on Kaggle and pushed 965 structured chunks to HuggingFace dataset `Saad-Elouakate/AI-Adaptive-Learning`.
+- **Phase 2 (RAG):** Created the `src/phase2_rag/` module:
+  - `config.py` — embedding model and repository settings
+  - `embedder.py` — logic to download chunks from HF and embed into ChromaDB
+  - `retriever.py` — RAGRetriever wrapper for the Gradio app
+  - `main.py` — Kaggle script to orchestrate indexing and pushing
 
 ### ⏳ Next Action
-Run `kaggle/pdf_to_markdown_pipeline.py` on **all 5 PDFs in `Document-Data-Set/2bac/`** on Kaggle
-(Maths, Physics, English — cours + exercices). Verify `chunks.json` quality for all 3 subjects,
-then move to Phase 2 to build the persistent 2Bac ChromaDB knowledge base.
+Run `src/phase2_rag/main.py` on Kaggle to process the 965 chunks, build the ChromaDB vector index, and push it to the new `Saad-Elouakate/AI-Adaptive-Learning-Index` dataset on HuggingFace.
 
 ---
 
 ## Status Log
 
-```
+[2026-06-03]  Phase 1 Complete & Phase 2 Created
+              - Successfully ran Phase 1 extraction on 2Bac PDFs in Kaggle
+              - Pushed extracted chunks (e.g. 965 chunks from English exam) to HF Dataset
+              - Created `src/phase2_rag/` module (embedder, retriever, config, main)
+              - Added documentation for Phase 2 components
+
 [2026-06-03]  MVP scope finalised via questionnaire
               - Target year: 2ème Bac only
               - Target subjects: Mathématiques · Physique-Chimie · English
