@@ -1,0 +1,38 @@
+{
+  "config": {
+    "pdf_path": "/kaggle/input/datasets/saadelouakate/proba-raw-pdfs/Cours_Proba-Statistiques-1-6.pdf",
+    "pdf_output_dir": "/kaggle/working/extracted_markdown",
+    "model_name": "/kaggle/input/models/qwen-lm/qwen-3-vl/transformers/2b-instruct/1",
+    "device": "cuda",
+    "max_new_tokens": 2048,
+    "temperature": 0.1,
+    "top_p": 0.9,
+    "batch_size": 1,
+    "dpi": 150,
+    "start_page": 0,
+    "end_page": null,
+    "push_to_hub": true,
+    "hub_dataset_name": "Saad-Elouakate/AI-Adaptive-Learning",
+    "hub_token": null,
+    "save_local": true,
+    "chapter_pattern": "^(Chapitre|Chapter)\\s+\\d+|^\\\\d+\\s+[A-Z]",
+    "section_pattern": "^\\d+\\.\\d+\\s+[A-Z]",
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "curriculum": "Moroccan University - FSTS Settat",
+    "source_file": "Cours_Proba-Statistiques-1-6.pdf"
+  },
+  "stats": {
+    "total_pages_processed": 6,
+    "total_chunks": 90,
+    "total_chars": 13011,
+    "total_math_formulas": 51,
+    "content_types": {
+      "course_content": 50,
+      "definition": 38,
+      "theorem": 1,
+      "example": 1
+    }
+  }
+}
