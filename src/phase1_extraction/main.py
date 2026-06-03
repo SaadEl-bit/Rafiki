@@ -1,11 +1,17 @@
 """
 CLI entry point — Phase 1 PDF Extraction
 =========================================
-Run with:
-    python -m src.phase1_extraction.main --help
-    python -m src.phase1_extraction.main --input data/raw_pdfs/Maths_2Bac.pdf
-    python -m src.phase1_extraction.main --input data/raw_pdfs/ --no-vlm
-    python -m src.phase1_extraction.main --input data/raw_pdfs/ --push-to-hub
+
+LOCAL (no GPU):
+    python -m src.phase1_extraction.main --input data/raw_pdfs/Maths_2Bac.pdf --no-vlm
+
+KAGGLE (GPU, full pipeline):
+    python -m src.phase1_extraction.main \\
+        --input /kaggle/input/m3allem-2bac-pdfs/ \\
+        --output /kaggle/working/extracted \\
+        --push-to-hub
+
+    Requires: Kaggle Secret "HF_TOKEN" attached in Add-ons → Secrets.
 """
 
 from __future__ import annotations
@@ -29,13 +35,13 @@ def build_parser() -> argparse.ArgumentParser:
         epilog="""
 Examples:
   # Test locally (no GPU) with a single PDF
-  python -m src.phase1_extraction.main --input data/raw_pdfs/Maths_2Bac.pdf --no-vlm
+  python -m src.phase1_extraction.main --input Document-Data-Set/2bac/Maths-fonctions-cours.pdf --no-vlm
 
-  # Process a whole folder with the VLM on Kaggle
-  python -m src.phase1_extraction.main --input /kaggle/input/bac-pdfs/ --output /kaggle/working/extracted
-
-  # Push results to HuggingFace
-  python -m src.phase1_extraction.main --input data/raw_pdfs/ --push-to-hub
+  # Process the whole 2bac folder on Kaggle with VLM + push results
+  python -m src.phase1_extraction.main \\
+      --input /kaggle/input/m3allem-2bac-pdfs/ \\
+      --output /kaggle/working/extracted \\
+      --push-to-hub
         """,
     )
 
@@ -85,12 +91,15 @@ Examples:
     p.add_argument(
         "--push-to-hub",
         action="store_true",
-        help="Push extracted chunks to HuggingFace Hub (requires HF_TOKEN env var).",
+        help=(
+            "Push extracted chunks to HuggingFace Hub. "
+            "Token is read from Kaggle Secret 'HF_TOKEN' or env var HF_TOKEN."
+        ),
     )
     p.add_argument(
         "--hub-dataset",
         default="Saad-Elouakate/AI-Adaptive-Learning",
-        help="HuggingFace dataset repo name.",
+        help="HuggingFace dataset repo name (user/repo-name).",
     )
 
     # Metadata overrides
@@ -108,6 +117,36 @@ Examples:
     return p
 
 
+def _login_huggingface() -> None:
+    """
+    Try to log into HuggingFace at startup (only needed when --push-to-hub is used).
+
+    Resolution order:
+      1. Kaggle Secret  "HF_TOKEN"  (when running on Kaggle)
+      2. Environment variable HF_TOKEN  (when running locally)
+
+    If neither is found, we skip the login here — the pipeline will warn
+    and skip the push later when it actually tries to upload.
+    """
+    import os
+    try:
+        from kaggle_secrets import UserSecretsClient
+        from huggingface_hub import login
+        token = UserSecretsClient().get_secret("HF_TOKEN")
+        if token:
+            login(token=token)
+            print("✅ Logged into HuggingFace Hub via Kaggle Secret.")
+            return
+    except Exception:
+        pass  # Not on Kaggle, or secret not attached
+
+    token = os.getenv("HF_TOKEN")
+    if token:
+        from huggingface_hub import login
+        login(token=token)
+        print("✅ Logged into HuggingFace Hub via HF_TOKEN env var.")
+
+
 def main() -> None:
     args   = build_parser().parse_args()
     level  = logging.DEBUG if args.verbose else logging.INFO
@@ -116,6 +155,10 @@ def main() -> None:
         format = "%(asctime)s | %(levelname)-8s | %(message)s",
         datefmt= "%H:%M:%S",
     )
+
+    # Login to HuggingFace early so any push later can succeed
+    if args.push_to_hub:
+        _login_huggingface()
 
     config = PipelineConfig(
         output_dir       = args.output,
@@ -136,7 +179,7 @@ def main() -> None:
     if args.level:
         config.default_level = args.level
 
-    pipeline  = M3allemPDFPipeline(config)
+    pipeline   = M3allemPDFPipeline(config)
     input_path = Path(args.input)
 
     if input_path.is_dir():
@@ -147,10 +190,15 @@ def main() -> None:
         print(f"[ERROR] --input must be a PDF file or a folder: {input_path}")
         sys.exit(1)
 
-    print(f"\n✅  Phase 1 complete.")
-    print(f"   PDFs processed:  {len(set(c['source_file'] for c in chunks))}")
-    print(f"   Total chunks:    {len(chunks)}")
-    print(f"   Output dir:      {config.output_dir}/")
+    n_files = len(set(c["source_file"] for c in chunks))
+    print(f"\n{'='*50}")
+    print(f"✅  Phase 1 complete.")
+    print(f"   PDFs processed : {n_files}")
+    print(f"   Total chunks   : {len(chunks)}")
+    print(f"   Output dir     : {config.output_dir}/")
+    if args.push_to_hub:
+        print(f"   HF Dataset     : https://huggingface.co/datasets/{config.hub_dataset_name}")
+    print(f"{'='*50}\n")
 
 
 if __name__ == "__main__":
