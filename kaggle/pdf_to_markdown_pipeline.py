@@ -30,11 +30,14 @@ import subprocess, sys
 
 def _pip_install(*packages):
     """Install packages quietly via pip (works in Kaggle .py scripts)."""
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "-q", *packages],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.STDOUT,
-    )
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "-q", *packages],
+            stdout=subprocess.DEVNULL,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"[pip ERROR] Failed to install: {packages}\n  → {e}")
+        raise
 
 print("Installing dependencies...")
 _pip_install("PyMuPDF", "Pillow")

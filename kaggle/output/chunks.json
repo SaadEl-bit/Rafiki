@@ -1,0 +1,959 @@
+[
+  {
+    "page_number": 1,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "preamble",
+    "content_type": "course_content",
+    "content": "# Probabilités & Statistiques",
+    "math_formulas": []
+  },
+  {
+    "page_number": 1,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "FIGI-S1",
+    "content_type": "course_content",
+    "content": "## FIGI-S1",
+    "math_formulas": []
+  },
+  {
+    "page_number": 1,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "B. EL MOURTJI",
+    "content_type": "course_content",
+    "content": "### B. EL MOURTJI\n\nbasma.elmourtji@uhp.ac.ma",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "preamble",
+    "content_type": "course_content",
+    "content": "```markdown\n# Contents",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "1 Calcul de probabilité",
+    "content_type": "course_content",
+    "content": "## 1 Calcul de probabilité",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "1.1 Terminologie",
+    "content_type": "course_content",
+    "content": "### 1.1 Terminologie\n\n- **1.1.1** Expérience aléatoire et ensemble fondamental\n- **1.1.2** Événements aléatoires\n- **1.1.3** Algèbre des événements",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "1.2 Probabilité dans le cas général",
+    "content_type": "course_content",
+    "content": "### 1.2 Probabilité dans le cas général\n\n- **1.2.1** Probabilité uniforme sur $\\Omega$\n- **1.2.2** Probabilité conditionnelle",
+    "math_formulas": [
+      "\\Omega"
+    ]
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "2 Variables aléatoires discrètes",
+    "content_type": "course_content",
+    "content": "## 2 Variables aléatoires discrètes",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "2.1 Généralités",
+    "content_type": "course_content",
+    "content": "### 2.1 Généralités\n\n- **2.1.1** Loi de probabilité associée à une v.a.d\n- **2.1.2** Fonction de Répartition\n- **2.1.3** Loi de Bernoulli\n- **2.1.4** Loi Uniforme\n- **2.1.5** Loi Binomiale\n- **2.1.6** Loi de Poisson\n- **2.1.7** Loi Géométrique\n- **2.1.8** Loi Hypergéométrique",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "2.2 Intégration des Variables Aléatoires Discrètes",
+    "content_type": "course_content",
+    "content": "### 2.2 Intégration des Variables Aléatoires Discrètes\n\n- **2.2.1** Espérance Mathématique\n- **2.2.2** Application : Moments d'Ordre $p$, $p \\ge 1$\n- **2.2.3** Variance d'une Variable Aléatoire Discrète",
+    "math_formulas": [
+      "p",
+      "p \\ge 1"
+    ]
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "2.3 Variables Aléatoires Discrètes Indépendantes",
+    "content_type": "course_content",
+    "content": "### 2.3 Variables Aléatoires Discrètes Indépendantes",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "3 Variables Aléatoires Continues",
+    "content_type": "course_content",
+    "content": "## 3 Variables Aléatoires Continues",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "3.1 Définitions et propriétés",
+    "content_type": "definition",
+    "content": "### 3.1 Définitions et propriétés\n\n- **3.1** Loi de probabilité associée à une v.a.d\n- **3.2** Loi d'une Variable Aléatoire\n- **3.3** Fonction de Répartition\n- **3.4** Loi de Probabilités Usuelles",
+    "math_formulas": []
+  },
+  {
+    "page_number": 2,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "3.4.1 Loi Uniforme sur $[a,b]$, $-\\infty < a < b < +\\infty$",
+    "content_type": "course_content",
+    "content": "### 3.4.1 Loi Uniforme sur $[a,b]$, $-\\infty < a < b < +\\infty$\n- **3.4.2** Loi Normale de Paramètres $m \\in \\mathbb{R}$, $\\sigma^2 \\ge 0$\n- **3.4.3** Loi Exponentielle de Paramètre $\\lambda$, $\\lambda > 0$\n- **3.4.4** Loi de Cauchy de Paramètres $a,b \\in \\mathbb{R}$, $a \\ne 0$\n- **3.4.5** Loi de Laplace\n```",
+    "math_formulas": [
+      "[a,b]",
+      "-\\infty < a < b < +\\infty",
+      "m \\in \\mathbb{R}",
+      "\\sigma^2 \\ge 0",
+      "\\lambda",
+      "\\lambda > 0",
+      "a,b \\in \\mathbb{R}",
+      "a \\ne 0"
+    ]
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "preamble",
+    "content_type": "course_content",
+    "content": "```markdown\n# 4 Couple de variables aléatoires",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1 Couple de variables aléatoires discrètes",
+    "content_type": "course_content",
+    "content": "## 4.1 Couple de variables aléatoires discrètes",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1.1 Loi d'un couple",
+    "content_type": "course_content",
+    "content": "### 4.1.1 Loi d'un couple",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1.2 Lois marginales",
+    "content_type": "course_content",
+    "content": "### 4.1.2 Lois marginales",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1.3 Lois conditionnelles",
+    "content_type": "course_content",
+    "content": "### 4.1.3 Lois conditionnelles",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1.4 Moments conditionnels",
+    "content_type": "course_content",
+    "content": "### 4.1.4 Moments conditionnels",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1.5 Moments associés à un couple",
+    "content_type": "course_content",
+    "content": "### 4.1.5 Moments associés à un couple",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.1.6 Loi d'une somme",
+    "content_type": "course_content",
+    "content": "### 4.1.6 Loi d'une somme",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.2 Couple de variables aléatoires continues",
+    "content_type": "course_content",
+    "content": "## 4.2 Couple de variables aléatoires continues",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.2.1 Loi du couple",
+    "content_type": "course_content",
+    "content": "### 4.2.1 Loi du couple",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.2.2 Lois marginales",
+    "content_type": "course_content",
+    "content": "### 4.2.2 Lois marginales",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.2.3 Lois conditionnelles",
+    "content_type": "course_content",
+    "content": "### 4.2.3 Lois conditionnelles",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.2.4 Moments associés à un couple",
+    "content_type": "course_content",
+    "content": "### 4.2.4 Moments associés à un couple",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "4.2.5 Loi d'une somme",
+    "content_type": "course_content",
+    "content": "### 4.2.5 Loi d'une somme\n\n# 5 Comportement asymptotique",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.1 Types de convergences",
+    "content_type": "course_content",
+    "content": "## 5.1 Types de convergences",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.1.1 Convergence en probabilité",
+    "content_type": "course_content",
+    "content": "### 5.1.1 Convergence en probabilité",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.1.2 Loi des grands nombres",
+    "content_type": "course_content",
+    "content": "### 5.1.2 Loi des grands nombres",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.1.3 Convergence en loi",
+    "content_type": "course_content",
+    "content": "### 5.1.3 Convergence en loi",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.1.4 Théorème central limite",
+    "content_type": "theorem",
+    "content": "### 5.1.4 Théorème central limite",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.1.5 Convergence presque sûre",
+    "content_type": "course_content",
+    "content": "### 5.1.5 Convergence presque sûre",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2 Approximations",
+    "content_type": "course_content",
+    "content": "## 5.2 Approximations",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2.1 Convergence des lois usuelles",
+    "content_type": "course_content",
+    "content": "### 5.2.1 Convergence des lois usuelles",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2.2 Loi binomiale",
+    "content_type": "course_content",
+    "content": "### 5.2.2 Loi binomiale",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2.3 Loi hypergéométrique",
+    "content_type": "course_content",
+    "content": "### 5.2.3 Loi hypergéométrique",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2.4 Loi de Poisson",
+    "content_type": "course_content",
+    "content": "### 5.2.4 Loi de Poisson",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2.5 Loi gamma",
+    "content_type": "course_content",
+    "content": "### 5.2.5 Loi gamma",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.2.6 Loi du khi-deux",
+    "content_type": "course_content",
+    "content": "### 5.2.6 Loi du khi-deux",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "5.3 Loi de Student",
+    "content_type": "course_content",
+    "content": "## 5.3 Loi de Student\n\n# 6 Estimation",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.1 Rappel sur les lois du χ², de Student et de Fisher-Snedecor",
+    "content_type": "course_content",
+    "content": "## 6.1 Rappel sur les lois du χ², de Student et de Fisher-Snedecor",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.1.1 Rappel du χ²",
+    "content_type": "course_content",
+    "content": "### 6.1.1 Rappel du χ²",
+    "math_formulas": []
+  },
+  {
+    "page_number": 3,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.1.2 Loi de Fisher-Snedecor",
+    "content_type": "course_content",
+    "content": "### 6.1.2 Loi de Fisher-Snedecor\n\n```",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "preamble",
+    "content_type": "definition",
+    "content": "```markdown\n# 6.1.3 Loi de Student\n\n**Definition:** La loi de Student est une distribution de probabilité qui décrit la distribution de la moyenne d'une population lorsque la variance est inconnue.\n\n# 6.1.4 Cas des échantillons gaussiens\n\n**Definition:** Lorsque les observations sont distribuées selon une loi normale, la loi de Student est utilisée pour analyser les échantillons.\n\n# 6.1.5 Application : carte de contrôle\n\n**Definition:** La carte de contrôle est un outil statistique utilisé pour surveiller la qualité d'une production ou d'un processus industriel en temps réel.\n\n# 6.2 Échantillonnage",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.1 Terminologie",
+    "content_type": "definition",
+    "content": "## 6.2.1 Terminologie\n\n**Definition:** Le terme \"échantillonnage\" désigne le processus de sélection d'une partie d'un ensemble pour étudier ses caractéristiques.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.2 Méthodes de sondage",
+    "content_type": "definition",
+    "content": "## 6.2.2 Méthodes de sondage\n\n**Definition:** Les méthodes de sondage sont des techniques utilisées pour recueillir des données à partir d'un échantillon.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.3 Échantillon aléatoire",
+    "content_type": "definition",
+    "content": "## 6.2.3 Échantillon aléatoire\n\n**Definition:** Un échantillon aléatoire est un ensemble de données choisi de manière équitable et indépendante.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.4 Statistique de l'échantillon",
+    "content_type": "definition",
+    "content": "## 6.2.4 Statistique de l'échantillon\n\n**Definition:** La statistique de l'échantillon est une mesure qui détermine la tendance centrale ou la dispersion des données.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.5 Distributions échantillonnales",
+    "content_type": "definition",
+    "content": "## 6.2.5 Distributions échantillonnales\n\n**Definition:** Les distributions échantillonnales sont des distributions de probabilité qui découlent de l'analyse des échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.6 Estimator et propriétés d'un estimateur",
+    "content_type": "definition",
+    "content": "## 6.2.6 Estimator et propriétés d'un estimateur\n\n**Definition:** Un estimateur est une fonction de données qui permet de déterminer une valeur de paramètre. Les propriétés d'un estimateur incluent sa convergence, sa variance, et sa précision.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.2.7 Vraisemblance d'un échantillon",
+    "content_type": "definition",
+    "content": "## 6.2.7 Vraisemblance d'un échantillon\n\n**Definition:** La vraisemblance d'un échantillon est la probabilité de l'échantillon donné par une certaine distribution.\n\n# 6.3 Estimators ponctuels",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.3.1 Méthode du maximum de vraisemblance",
+    "content_type": "definition",
+    "content": "## 6.3.1 Méthode du maximum de vraisemblance\n\n**Definition:** La méthode du maximum de vraisemblance consiste à choisir l'estimateur qui maximise la vraisemblance de l'échantillon.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.3.2 Méthode des moments",
+    "content_type": "definition",
+    "content": "## 6.3.2 Méthode des moments\n\n**Definition:** La méthode des moments consiste à comparer les moments de l'échantillon avec les moments de la distribution théorique.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "6.3.3 Estimation par intervalle de confiance",
+    "content_type": "definition",
+    "content": "## 6.3.3 Estimation par intervalle de confiance\n\n**Definition:** L'intervalle de confiance est une estimation de la valeur d'un paramètre avec une certaine probabilité.\n\n# 6.4 Estimation d'une proportion\n\n**Definition:** L'estimation d'une proportion est une méthode statistique utilisée pour déterminer la proportion d'un groupe.\n\n# 7 Tests statistiques",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.1 Introduction",
+    "content_type": "definition",
+    "content": "## 7.1 Introduction\n\n**Definition:** Les tests statistiques sont des méthodes utilisées pour tester des hypothèses sur les données.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.2 Hypothèses nulle et alternative",
+    "content_type": "definition",
+    "content": "## 7.2 Hypothèses nulle et alternative\n\n**Definition:** Une hypothèse nulle est une assertion qui est supposée vraie jusqu'à ce que des preuves suffisantes la contredisent. Une hypothèse alternative est une assertion qui est supposée fausse si l'hypothèse nulle est rejetée.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.3 Risque de l'er et 2ème espèce",
+    "content_type": "definition",
+    "content": "## 7.3 Risque de l'er et 2ème espèce\n\n**Definition:** Le risque de l'er est la probabilité de rejeter une hypothèse nulle qui est vraie. Le risque de 2ème espèce est la probabilité de ne pas rejeter une hypothèse nulle qui est fausse.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.4 Exemples d'utilisation",
+    "content_type": "example",
+    "content": "## 7.4 Exemples d'utilisation",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.4.1 Comparer un échantillon à une référence théorique",
+    "content_type": "definition",
+    "content": "### 7.4.1 Comparer un échantillon à une référence théorique\n\n**Definition:** L'objectif est de comparer une distribution d'échantillon à une distribution théorique.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.4.2 Comparer plusieurs échantillons",
+    "content_type": "definition",
+    "content": "### 7.4.2 Comparer plusieurs échantillons\n\n**Definition:** L'objectif est de comparer plusieurs distributions d'échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.5 Choix d'un test suivant la procédure de Neyman",
+    "content_type": "course_content",
+    "content": "## 7.5 Choix d'un test suivant la procédure de Neyman",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.5.1 Test d'une espérance",
+    "content_type": "definition",
+    "content": "### 7.5.1 Test d'une espérance\n\n**Definition:** Le test d'une espérance est utilisé pour tester si la moyenne d'un échantillon est égale à une valeur donnée.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.5.2 Test d'un écart-type",
+    "content_type": "definition",
+    "content": "### 7.5.2 Test d'un écart-type\n\n**Definition:** Le test d'un écart-type est utilisé pour tester si l'écart-type d'un échantillon est égal à une valeur donnée.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.5.3 Test d'un pourcentage",
+    "content_type": "definition",
+    "content": "### 7.5.3 Test d'un pourcentage\n\n**Definition:** Le test d'un pourcentage est utilisé pour tester si la proportion d'un échantillon est égale à une valeur donnée.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.6 Méthode de Neyman et Pearson",
+    "content_type": "course_content",
+    "content": "## 7.6 Méthode de Neyman et Pearson",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.6.1 Principe de la règle de Neyman et Pearson",
+    "content_type": "definition",
+    "content": "### 7.6.1 Principe de la règle de Neyman et Pearson\n\n**Definition:** La règle de Neyman et Pearson est une méthode de test statistique qui permet de déterminer la probabilité de rejet d'une hypothèse nulle.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.6.2 Hypothèses simples",
+    "content_type": "definition",
+    "content": "### 7.6.2 Hypothèses simples\n\n**Definition:** Une hypothèse simple est une hypothèse qui implique une seule valeur de paramètre.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.6.3 Hypothèses multiples",
+    "content_type": "definition",
+    "content": "### 7.6.3 Hypothèses multiples\n\n**Definition:** Une hypothèse multiple est une hypothèse qui implique plusieurs valeurs de paramètres.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.7 Tests d'homogénéité",
+    "content_type": "course_content",
+    "content": "## 7.7 Tests d'homogénéité",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.7.1 Test de comparaison de deux variances ou test de Fisher-Snedecor",
+    "content_type": "definition",
+    "content": "### 7.7.1 Test de comparaison de deux variances ou test de Fisher-Snedecor\n\n**Definition:** Le test de comparaison de deux variances est utilisé pour comparer les variances de deux échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.7.2 Test de comparaison de deux moyennes",
+    "content_type": "definition",
+    "content": "### 7.7.2 Test de comparaison de deux moyennes\n\n**Definition:** Le test de comparaison de deux moyennes est utilisé pour comparer les moyennes de deux échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.7.3 Test de comparaison de deux proportions",
+    "content_type": "definition",
+    "content": "### 7.7.3 Test de comparaison de deux proportions\n\n**Definition:** Le test de comparaison de deux proportions est utilisé pour comparer les proportions de deux échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.8 Tests de comparaison d'échantillons appariés",
+    "content_type": "course_content",
+    "content": "## 7.8 Tests de comparaison d'échantillons appariés",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.8.1 Test de comparaison de deux échantillons appariés",
+    "content_type": "definition",
+    "content": "### 7.8.1 Test de comparaison de deux échantillons appariés\n\n**Definition:** Le test de comparaison de deux échantillons appariés est utilisé pour comparer les moyennes de deux échantillons qui sont liés.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.8.2 Analyse de la variance",
+    "content_type": "definition",
+    "content": "### 7.8.2 Analyse de la variance\n\n**Definition:** L'analyse de la variance est une méthode statistique utilisée pour comparer les moyennes de plusieurs échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.8.3 Test de comparaison d'échantillons appariés",
+    "content_type": "definition",
+    "content": "### 7.8.3 Test de comparaison d'échantillons appariés\n\n**Definition:** Le test de comparaison d'échantillons appariés est utilisé pour comparer les moyennes de deux échantillons qui sont liés.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.9 Tests de comparaison d'échantillons appariés",
+    "content_type": "course_content",
+    "content": "## 7.9 Tests de comparaison d'échantillons appariés",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.9.1 Analyse de la variance à un facteur. Comparaison de plusieurs moyennes",
+    "content_type": "definition",
+    "content": "### 7.9.1 Analyse de la variance à un facteur. Comparaison de plusieurs moyennes\n\n**Definition:** L'analyse de la variance à un facteur est une méthode statistique utilisée pour comparer les moyennes de plusieurs échantillons.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.9.2 Test de Khi-deux",
+    "content_type": "definition",
+    "content": "### 7.9.2 Test de Khi-deux\n\n**Definition:** Le test de Khi-deux est une méthode statistique utilisée pour tester des hypothèses sur les données.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.9.3 Test d'indépendance",
+    "content_type": "definition",
+    "content": "### 7.9.3 Test d'indépendance\n\n**Definition:** Le test d'indépendance est une méthode statistique utilisée pour tester si deux variables sont indépendantes.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.9.4 Test d'ajustement",
+    "content_type": "definition",
+    "content": "### 7.9.4 Test d'ajustement\n\n**Definition:** Le test d'ajustement est une méthode statistique utilisée pour tester si une distribution théorique correspond à une distribution empirique.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 4,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "7.9.5 Le test de Henry",
+    "content_type": "definition",
+    "content": "### 7.9.5 Le test de Henry\n\n**Definition:** Le test de Henry est une méthode statistique utilisée pour tester des hypothèses sur les données.\n\n# 7.10 Analyse de la variance\n\n**Definition:** L'analyse de la variance est une méthode statistique utilisée pour comparer les moyennes de plusieurs échantillons.\n\n# 7.11 Test de Khi-deux\n\n**Definition:** Le test de Khi-deux est une méthode statistique utilisée pour tester des hypothèses sur les données.\n\n# 7.12 Le test de Henry\n\n**Definition:** Le test de Henry est une méthode statistique utilisée pour tester des hypothèses sur les données.\n```",
+    "math_formulas": []
+  },
+  {
+    "page_number": 5,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "preamble",
+    "content_type": "course_content",
+    "content": "```markdown\n# Chapter 1",
+    "math_formulas": []
+  },
+  {
+    "page_number": 5,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "Calcul de probabilité",
+    "content_type": "course_content",
+    "content": "## Calcul de probabilité",
+    "math_formulas": []
+  },
+  {
+    "page_number": 5,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "1.1 Terminologie",
+    "content_type": "definition",
+    "content": "### 1.1 Terminologie\n\n#### 1.1.1 Expérience aléatoire et ensemble fondamental\n\n**Définition 1.** Une expérience aléatoire ξ est une expérience qui, bien que répétée dans des conditions apparemment identiques, peut produire des résultats différents. L'ensemble des résultats possibles d'une expérience aléatoire ξ s'appelle l'ensemble fondamental (ou univers ou espace des résultats) et est noté Ω. Ses éléments sont appelés résultats ou événements élémentaires.\n\n**Exemple 1.** On lance une pièce de monnaie. On a :\n\n$\\Omega = \\{P, F\\}$\n\nLancer la pièce est une expérience aléatoire.\n\n#### 1.1.2 Événements aléatoires\n\n**Définition 2.** Un événement aléatoire est un événement qui peut ou ne se réaliser au cours d'une expérience aléatoire. C'est un ensemble d'éventualités que l'on note souvent par A. C'est donc aussi une partie de Ω, soit $A \\in \\mathcal{P}(\\Omega)$.\n\n**Exemple 2.** Jet de dé : expérience aléatoire. Univers :\n\n$\\Omega = \\{1, 2, 3, 4, 5, 6\\}$\n\nÉventualités : $\\{1\\}, \\{2\\}, \\{3\\}, \\{4\\}, \\{5\\}, \\{6\\}$. Événement A : tomber sur un nombre pair, soit :\n\n$A = \\{2, 4, 6\\}$\n\n#### 1.1.3 Algèbre des événements\n\n- **Événement contraire** $\\bar{A}$ : $\\bar{A}$ se réalise si et seulement si $A$ n'est pas réalisable.\n\n- **Événement $A \\cap B$** : $A \\cap B$ est réalisé si et seulement si $A$ et $B$ sont simultanément réalisés.\n\n- Si $A \\cap B = \\emptyset$, c'est-à-dire que la réalisation simultanée des événements $A$ et $B$ est impossible, les événements $A$ et $B$ sont dits incompatibles.\n\n```",
+    "math_formulas": [
+      "\\Omega = \\{P, F\\}",
+      "A \\in \\mathcal{P}(\\Omega)",
+      "\\Omega = \\{1, 2, 3, 4, 5, 6\\}",
+      "\\{1\\}, \\{2\\}, \\{3\\}, \\{4\\}, \\{5\\}, \\{6\\}",
+      "A = \\{2, 4, 6\\}",
+      "\\bar{A}",
+      "\\bar{A}",
+      "A",
+      "A \\cap B",
+      "A \\cap B",
+      "A",
+      "B",
+      "A \\cap B = \\emptyset",
+      "A",
+      "B",
+      "A",
+      "B"
+    ]
+  },
+  {
+    "page_number": 6,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "preamble",
+    "content_type": "definition",
+    "content": "```markdown\n# CHAPTER 1. CALCUL DE PROBABILITÉ\n\n- **Événement A ∪ B :** A ∪ B est réalisé si et seulement si l’un au moins des événements A ou B est réalisé.\n- **Événement A ⊆ B :** A ⊆ B signiﬁe que dans tous les cas où B est réalisé, A est aussi réalisé.\n\nOn arrive au point essentiel qui est de définir la probabilité d’un événement A (A ⊆ Ω), qui doit mesurer la chance que l’événement A a de se réaliser lors de l’expérience. La complexité de la définition dépend de celle de Ω : Ω peut être fini, infini dénombrable, ou infini non dénombrable.",
+    "math_formulas": []
+  },
+  {
+    "page_number": 6,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "1.2 Probabilité dans le cas général",
+    "content_type": "definition",
+    "content": "## 1.2 Probabilité dans le cas général\n\n**Définition 3.** Soit Ω un univers, P(Ω) (l'ensemble des parties de Ω) et A ⊆ P(Ω). On appelle probabilité P sur (Ω, A) une application :\n\n$$\nP : A \\to [0,1]\n$$\n\n$$\n\\omega \\mapsto P(\\omega)\n$$\n\ntelle que :\n\n- $P(\\Omega) = 1$\n- Si A et B sont deux événements incompatibles (c'est-à-dire $A \\cap B = \\emptyset$), alors :\n  $$\n  P(A \\cup B) = P(A) + P(B)\n  $$\n\nLe triplet $(\\Omega, P(\\Omega), P)$ est appelé espace probabilisé.\n\n**Propriété 1.**\n- $P(\\bar{A}) = 1 - P(A)$\n- Pour tout $A \\in P(\\Omega)$, $0 \\leq P(A) \\leq 1$\n- $P(\\emptyset) = 0$\n- Si $A \\subseteq B$, alors $P(A) \\leq P(B)$\n- $P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$",
+    "math_formulas": [
+      "\nP : A \\to [0,1]\n",
+      "\n\\omega \\mapsto P(\\omega)\n",
+      "\n  P(A \\cup B) = P(A) + P(B)\n  ",
+      "",
+      "",
+      "",
+      "",
+      "P(\\Omega) = 1",
+      "A \\cap B = \\emptyset",
+      "",
+      "",
+      "(\\Omega, P(\\Omega), P)",
+      "P(\\bar{A}) = 1 - P(A)",
+      "A \\in P(\\Omega)",
+      "0 \\leq P(A) \\leq 1",
+      "P(\\emptyset) = 0",
+      "A \\subseteq B",
+      "P(A) \\leq P(B)",
+      "P(A \\cup B) = P(A) + P(B) - P(A \\cap B)"
+    ]
+  },
+  {
+    "page_number": 6,
+    "subject": "Probabilites & Statistiques",
+    "level": "FIGI-S1 (Bac+1)",
+    "language": "fr",
+    "section_title": "1.2.1 Probabilité uniforme sur Ω",
+    "content_type": "definition",
+    "content": "## 1.2.1 Probabilité uniforme sur Ω\n\n**Définition 4.** Lorsque Ω est de cardinal fini et que l'on affecte la même probabilité à chaque événement élémentaire, on dit qu'on choisit une probabilité P uniforme, aussi appelée équiprobabilité. On a alors :\n\n- Pour tout $\\omega \\in \\Omega$, $P(\\omega) = \\frac{1}{\\text{Card}(\\Omega)}$.\n- Pour tout événement $E$, $P(E) = \\frac{\\text{Card}(E)}{\\text{Card}(\\Omega)} = \\frac{\\text{nombre de cas favorables}}{\\text{nombre de cas possibles}}$.\n\n```",
+    "math_formulas": [
+      "\\omega \\in \\Omega",
+      "P(\\omega) = \\frac{1}{\\text{Card}(\\Omega)}",
+      "E",
+      "P(E) = \\frac{\\text{Card}(E)}{\\text{Card}(\\Omega)} = \\frac{\\text{nombre de cas favorables}}{\\text{nombre de cas possibles}}"
+    ]
+  }
+]

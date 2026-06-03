@@ -1,0 +1,20 @@
+# M3allem — Phase 1 Dependencies
+# ================================
+# Install with:  pip install -r src/requirements-phase1.txt
+
+# --- PDF parsing ---
+PyMuPDF>=1.23.0       # fitz — PDF opening, page rendering
+Pillow>=10.0.0        # PIL Image handling
+
+# --- Vision-Language Model (GPU / Kaggle only) ---
+# These are only needed when use_vlm=True.
+# On Kaggle the model is pre-cached; these ensure the Python bindings are present.
+transformers>=4.49.0
+qwen-vl-utils>=0.0.10
+accelerate>=0.30.0
+sentencepiece>=0.1.99
+einops>=0.7.0
+
+# --- HuggingFace Hub (dataset push) ---
+datasets>=2.19.0
+huggingface-hub>=0.23.0
