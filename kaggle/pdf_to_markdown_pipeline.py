@@ -88,7 +88,7 @@ class PipelineConfig:
     batch_size: int = 1       # Process pages sequentially with VL model
     dpi: int = 150            # PDF page render resolution (150 saves VRAM vs 200)
     start_page: int = 0       # 0-indexed, set to skip cover/toc
-    end_page: int = 3         # First 3 pages for test (0-indexed: pages 0,1,2)
+    end_page: Optional[int] = None  # None = process all pages
 
     # --- Output ---
     push_to_hub: bool = True
@@ -97,7 +97,7 @@ class PipelineConfig:
     save_local: bool = True
 
     # --- Content Classification ---
-    chapter_pattern: str = r"^(Chapitre|Chapter)\s+\d+|^\d+\s+[A-Z]"
+    chapter_pattern: str = r"^(Chapitre|Chapter)\s+\d+|^\\d+\s+[A-Z]"
     section_pattern: str = r"^\d+\.\d+\s+[A-Z]"
 
     # --- Metadata ---
@@ -193,7 +193,7 @@ class VisionLanguageProcessor:
         # AutoModelForImageTextToText correctly resolves Qwen2.5-VL without class mismatch.
         self.model = AutoModelForImageTextToText.from_pretrained(
             self.config.model_name,
-            torch_dtype=torch.bfloat16,
+            dtype=torch.bfloat16,
             device_map="auto",
             attn_implementation=attn,
         )
