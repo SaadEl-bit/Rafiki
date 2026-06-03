@@ -99,9 +99,16 @@ class M3allemPDFPipeline:
         """
         Process a single PDF and return its flat chunk list.
         Metadata is auto-detected from the filename (see FileMetadata).
+        Files whose subject is not recognised are skipped (returns []).
         """
         pdf_path  = Path(pdf_path)
         file_meta = FileMetadata.from_path(pdf_path, self.config)
+
+        # Skip files not belonging to the 3 MVP subjects
+        if file_meta.subject == FileMetadata.UNKNOWN_SUBJECT:
+            logger.warning("Skipping (unrecognised subject): %s", pdf_path.name)
+            return []
+
         return self._run(file_meta)
 
     # ── Core processing ───────────────────────────────────────────────────
