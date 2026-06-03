@@ -26,17 +26,13 @@ class BacLevel(str, Enum):
 
 
 class Subject(str, Enum):
-    """Core Bac subjects (extend as you add more PDFs)."""
-    MATHEMATIQUES          = "Mathématiques"
-    PHYSIQUE_CHIMIE        = "Physique-Chimie"
-    ENGLISH                = "English"
-    SVT                    = "SVT"
-    FRANCAIS               = "Français"
-    PHILOSOPHIE            = "Philosophie"
-    HISTOIRE_GEOGRAPHIE    = "Histoire-Géographie"
-    INFORMATIQUE           = "Informatique"
-    ARABIC                 = "العربية"
-    ISLAMIC                = "التربية الإسلامية"
+    """
+    MVP subjects: 2ème Bac (Maths, Physics, English).
+    Post-MVP: extend with SVT, Philosophie, Arabic, etc.
+    """
+    MATHEMATIQUES   = "Mathématiques"
+    PHYSIQUE_CHIMIE = "Physique-Chimie"
+    ENGLISH         = "English"
 
 
 class Specialization(str, Enum):
@@ -73,12 +69,9 @@ class PipelineConfig:
     output_dir: str = "data/extracted"
 
     # ── Vision-Language Model ─────────────────────────────────────────────
-    # On Kaggle with the model added as a Dataset input, use the local path.
-    # If internet is ON in the notebook, use the HuggingFace model ID instead.
-    model_name: str = (
-        "/kaggle/input/qwen2-5-vl/transformers/2b-instruct/1"
-        # Fallback (internet ON): "Qwen/Qwen2.5-VL-2B-Instruct"
-    )
+    # We use the HuggingFace ID by default. Kaggle will download it automatically
+    # using its fast internet connection.
+    model_name: str = "Qwen/Qwen2.5-VL-2B-Instruct"
     use_vlm: bool = True          # False → fast text-only fallback (CPU)
     max_new_tokens: int = 2048
     temperature: float = 0.1
@@ -96,14 +89,14 @@ class PipelineConfig:
         default_factory=lambda: os.getenv("HF_TOKEN")
     )
 
-    # ── Curriculum metadata (applied to ALL PDFs in one run) ──────────────
-    # Override these per-file via the FileMetadata helper below.
-    # Defaults for the MVP: 2Bac Maths (auto-overridden from filename)
-    default_subject: str = Subject.MATHEMATIQUES.value
-    default_level: str   = BacLevel.DEUXIEME_BAC.value
-    default_language: str = "fr"
+    # ── Curriculum metadata ───────────────────────────────────────────
+    # MVP is 2ème Bac only. Level is ALWAYS 2Bac — never changes.
+    # Subject is auto-detected from the filename in FileMetadata.from_path().
+    default_subject: str = Subject.MATHEMATIQUES.value   # fallback if filename unrecognised
+    default_level: str   = BacLevel.DEUXIEME_BAC.value   # FIXED: 2Bac only
+    default_language: str = "fr"                          # French for Maths & PC; English overrides below
     default_specialization: str = Specialization.SCIENCES_MATHS_A.value
-    curriculum: str = "Moroccan National Bac Curriculum"
+    curriculum: str = "Moroccan National Bac Curriculum 2ème Bac"
 
 
 # ---------------------------------------------------------------------------
@@ -115,52 +108,74 @@ class FileMetadata:
     """
     Metadata for a single PDF file.
 
-    The pipeline auto-detects subject/level from the filename if you follow
-    the naming convention:  <Subject>_<Level>_<title>.pdf
-    e.g.   Maths_2Bac_Probabilites.pdf
-           PC_1Bac_Ondes.pdf
+    MVP naming convention (any separator works: dash, underscore, space):
+        Maths-cours.pdf        → subject=Mathématiques, level=2Bac, lang=fr
+        Physique-exercices.pdf → subject=Physique-Chimie, level=2Bac, lang=fr
+        English-cours.pdf      → subject=English,         level=2Bac, lang=en
+
+    Files that do NOT match any of the 3 MVP subjects are SKIPPED with a warning.
     """
     pdf_path: Path
     subject: str
     level: str
     language: str        = "fr"
     specialization: str  = ""
-    chapter: str         = ""    # optional — filled from PDF content
+    chapter: str         = ""   # optional — filled from PDF content later
+
+    # Sentinel used to mark an unrecognised file so the pipeline can skip it.
+    UNKNOWN_SUBJECT = "__UNKNOWN__"
+
+    # Keywords that map to each MVP subject
+    _SUBJECT_KEYWORDS: dict = None   # initialised as a class var below
 
     @classmethod
     def from_path(cls, path: Path, config: PipelineConfig) -> "FileMetadata":
         """
-        Auto-populate metadata from filename where possible,
-        falling back to config defaults.
+        Detect subject from filename.
+        Level is ALWAYS 2Bac (MVP constraint — no need to detect from filename).
+        Language defaults to French; English PDFs get lang=en automatically.
         """
-        stem = path.stem  # e.g. "Maths_2Bac_Probabilites"
-        parts = stem.split("_")
+        import logging
+        logger = logging.getLogger(__name__)
 
-        subject = config.default_subject
-        level   = config.default_level
+        stem_lower = path.stem.lower()   # e.g. "english-cours", "maths-fonctions"
 
-        # Simple heuristics — extend to your naming convention
-        for part in parts:
-            part_lower = part.lower()
-            if part_lower in ("1bac", "tc", "tronc"):
-                level = BacLevel.PREMIERE_BAC.value if "1" in part_lower else BacLevel.TRONC_COMMUN.value
-            elif part_lower in ("2bac",):
-                level = BacLevel.DEUXIEME_BAC.value
-            elif part_lower in ("math", "maths"):
-                subject = Subject.MATHEMATIQUES.value
-            elif part_lower in ("pc", "physique"):
-                subject = Subject.PHYSIQUE_CHIMIE.value
-            elif part_lower in ("english", "anglais"):
-                subject = Subject.ENGLISH.value
-            elif part_lower in ("svt",):
-                subject = Subject.SVT.value
-            elif part_lower in ("philo",):
-                subject = Subject.PHILOSOPHIE.value
+        # ── Subject detection ─────────────────────────────────────────────
+        if any(k in stem_lower for k in ("math", "maths")):
+            subject  = Subject.MATHEMATIQUES.value
+            language = "fr"
+        elif any(k in stem_lower for k in ("pc", "physique", "chimie")):
+            subject  = Subject.PHYSIQUE_CHIMIE.value
+            language = "fr"
+        elif any(k in stem_lower for k in ("english", "anglais")):
+            subject  = Subject.ENGLISH.value
+            language = "en"   # English PDFs are in English, not French
+        else:
+            # File is not part of the MVP — skip it.
+            logger.warning(
+                "Skipping '%s': subject not recognised. "
+                "MVP only supports: Maths, Physique-Chimie, English.",
+                path.name,
+            )
+            return cls(
+                pdf_path=path,
+                subject=cls.UNKNOWN_SUBJECT,
+                level=BacLevel.DEUXIEME_BAC.value,
+                language=config.default_language,
+                specialization="",
+            )
 
+        # ── Level is ALWAYS 2Bac ───────────────────────────────────────────
+        level = BacLevel.DEUXIEME_BAC.value
+
+        logger.info(
+            "Detected: %s → subject='%s'  level='%s'  lang='%s'",
+            path.name, subject, level, language,
+        )
         return cls(
             pdf_path=path,
             subject=subject,
             level=level,
-            language=config.default_language,
+            language=language,
             specialization=config.default_specialization,
         )
