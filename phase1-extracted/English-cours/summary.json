@@ -1,0 +1,18 @@
+{
+  "source_file": "English-cours.pdf",
+  "subject": "English",
+  "level": "2Bac",
+  "language": "en",
+  "pages_processed": 22,
+  "total_chunks": 118,
+  "total_chars": 37142,
+  "total_math": 0,
+  "content_types": {
+    "course_content": 96,
+    "remark": 1,
+    "example": 17,
+    "definition": 2,
+    "solution": 1,
+    "exercise": 1
+  }
+}

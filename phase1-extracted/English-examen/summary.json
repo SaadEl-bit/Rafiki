@@ -1,0 +1,13 @@
+{
+  "source_file": "English-examen.pdf",
+  "subject": "English",
+  "level": "2Bac",
+  "language": "en",
+  "pages_processed": 6,
+  "total_chunks": 965,
+  "total_chars": 28285,
+  "total_math": 0,
+  "content_types": {
+    "course_content": 965
+  }
+}

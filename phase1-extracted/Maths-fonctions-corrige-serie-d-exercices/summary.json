@@ -1,0 +1,20 @@
+{
+  "source_file": "Maths-fonctions-corrige-serie-d-exercices.pdf",
+  "subject": "Mathématiques",
+  "level": "2Bac",
+  "language": "fr",
+  "pages_processed": 7,
+  "total_chunks": 53,
+  "total_chars": 25197,
+  "total_math": 369,
+  "content_types": {
+    "exercise": 14,
+    "definition": 5,
+    "course_content": 12,
+    "solution": 14,
+    "remark": 2,
+    "theorem": 2,
+    "proof": 2,
+    "example": 2
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "source_file": "Physique-lois-de-newton-cours-Exercices.pdf",
+  "subject": "Physique-Chimie",
+  "level": "2Bac",
+  "language": "fr",
+  "pages_processed": 12,
+  "total_chunks": 34,
+  "total_chars": 25906,
+  "total_math": 347,
+  "content_types": {
+    "course_content": 19,
+    "exercise": 10,
+    "remark": 4,
+    "theorem": 1
+  }
+}
