@@ -1,0 +1,33 @@
+# M3allem Project
+
+## Introduction
+
+These phrases may be of great help if you manage to learn how to use them correctly. I advise all of you to learn them by heart first, then use as many as you can whenever you are writing. You’ll see how beautiful your style will be in a few weeks “Inshallah”.
+
+## Phrases for Writing
+
+### To introduce an idea or a paragraph
+
+- A great deal of writing has been devoted to……………………
+- It’s generally said / thought/ assumed that…………………
+- Nowadays we take it for granted that……………………………
+- It’s a known fact that……………………………………………
+- Gone are the days when……………………………………………
+
+### To oppose an idea before
+
+- However, Although, if In spite of, despite
+- Yet , though, even though, even
+- Nevertheless even
+
+### To support an idea before
+
+- Besides, Moreover, Furthermore,
+- Moreover What’s more, in addition to this……
+
+### To conclude
+
+- In conclusion one can say that……………………
+- To sum up……………………
+- In a nutshell……………………
+- At this point, one can conclude by saying that……………………

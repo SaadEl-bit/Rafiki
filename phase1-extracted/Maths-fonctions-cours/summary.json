@@ -1,0 +1,20 @@
+{
+  "source_file": "Maths-fonctions-cours.pdf",
+  "subject": "Mathématiques",
+  "level": "2Bac",
+  "language": "fr",
+  "pages_processed": 15,
+  "total_chunks": 100,
+  "total_chars": 45348,
+  "total_math": 766,
+  "content_types": {
+    "course_content": 44,
+    "definition": 14,
+    "example": 8,
+    "remark": 4,
+    "property": 16,
+    "theorem": 2,
+    "exercise": 9,
+    "solution": 3
+  }
+}
