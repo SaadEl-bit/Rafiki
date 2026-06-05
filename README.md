@@ -64,31 +64,39 @@ Load pre-built ChromaDB  ← built from YOUR 2Bac PDFs (Maths · Physics · Engl
 │  Phase 1 — PDF Extraction       │  Qwen2.5-VL-2B  (Kaggle T4 GPU)
 │  PDF pages → Markdown chunks    │  PyMuPDF + PIL
 └──────────────┬──────────────────┘
-               │  chunks.json  (pre-built KB)
+               │  chunks.json  (pushed to HuggingFace Dataset)
                ▼
 ┌─────────────────────────────────┐
 │  Phase 2 — RAG Knowledge Base   │  sentence-transformers (CPU)
 │  Embed chunks → ChromaDB        │  multilingual-MiniLM-L12-v2
-│  (ships with the app)           │  ChromaDB on-disk
+│  (pushed to HuggingFace Dataset)│  ChromaDB on-disk
 └──────────────┬──────────────────┘
-               │  vector store  ← also used at every query (permanent)
+               │  vector store ← used at every query (permanent)
                ▼
 ┌─────────────────────────────────┐
 │  Phase 3 — Fine-tuned LLM       │  Qwen2.5-1.5B + LoRA (Kaggle T4)
 │  Teaches style, not content     │  Unsloth 4-bit quant
 │  Fine-tuning data = Q&A pairs   │  ~50-200 triplets (Maths/Physics)
-│  extracted from same PDFs       │
+│  (pushed to HuggingFace Model)  │
 └──────────────┬──────────────────┘
-               │  HF Serverless Inference API (free, rate-limited)
+               │  HF Serverless Inference API
                ▼
 ┌─────────────────────────────────┐
-│  Phase 4 — Gradio App           │  HuggingFace Spaces (CPU Basic, free)
-│  Student-facing interface       │  Q&A + Exercise Correction (working)
-│                                 │  Exercise/Resume/Upload (frontend only)
+│  Phase 4 — FastAPI Backend      │  Python 3.11 + FastAPI
+│  POST /api/ask                  │  Railway (free tier)
+│  POST /api/correct              │  RAGRetriever + HF API client
+└──────────────┬──────────────────┘
+               │  JSON responses
+               ▼
+┌─────────────────────────────────┐
+│  Phase 5 — Next.js Frontend     │  Next.js 14+ (App Router)
+│  / → Landing page              │  Vercel (free tier)
+│  /app/chat → Q&A Chat          │  CSS from Figma/Stitch template
+│  /app/correction → Correction  │
 └─────────────────────────────────┘
 ```
 
-**Total MVP cost: $0** — all components run on free-tier Kaggle, HuggingFace Spaces, and HuggingFace Serverless Inference.
+**Total MVP cost: ~$0** — PDF extraction on Kaggle, AI hosting on HuggingFace, backend on Railway free tier, frontend on Vercel free tier.
 
 ---
 
@@ -97,74 +105,59 @@ Load pre-built ChromaDB  ← built from YOUR 2Bac PDFs (Maths · Physics · Engl
 ```
 src/
 ├── requirements-phase1.txt      pip install -r this before running Phase 1
+├── requirements-phase4.txt      pip install -r this before running the backend
 │
-└── phase1_extraction/           Phase 1 Python package
-    ├── __init__.py              Package exports (PipelineConfig, M3allemPDFPipeline)
-    │
-    ├── config.py                All settings + Moroccan Bac curriculum taxonomy
-    │                              BacLevel    — TC / 1Bac / 2Bac
-    │                              Subject     — Maths, Physics, English, …
-    │                              Specialization — Sciences Maths A/B, PC, …
-    │                              PipelineConfig  — model path, DPI, HF token, …
-    │                              FileMetadata    — auto-detects subject & level
-    │                                               from PDF filename convention
-    │
-    ├── pdf_processor.py         PyMuPDF (fitz) wrapper
-    │                              → PDFProcessor(path, dpi) context manager
-    │                              → iter_pages() → (page_num, PIL.Image, raw_text)
-    │                              → page_to_image() / page_to_text()
-    │
-    ├── extractor.py             Two pluggable extraction strategies
-    │                              VLMExtractor  — Qwen2.5-VL-2B (GPU / Kaggle)
-    │                                             loads model once, reuses per page
-    │                              TextExtractor — PyMuPDF text dump (CPU, no GPU)
-    │                                             fast fallback for local testing
-    │                              BaseExtractor — shared interface (ABC)
-    │
-    ├── structurer.py            Markdown post-processing & chunking
-    │                              clean_markdown()       strips VLM artifacts,
-    │                                                     normalises LaTeX delimiters
-    │                              chunk_by_headings()    splits on ## / ### headings
-    │                              detect_content_type()  classifies each chunk:
-    │                                  definition / theorem / proof / example /
-    │                                  exercise / solution / property / remark /
-    │                                  method / formula / summary / course_content
-    │                              make_chunk_id()        unique ID per chunk
-    │                                  e.g. maths_2bac_p03_c02
-    │                              extract_math_formulas() pulls all $...$ / $$...$$
-    │                              build_page_entry()     assembles the full record
-    │                                  with metadata ready for Phase 2 ChromaDB
-    │
-    ├── pipeline.py              End-to-end orchestrator
-    │                              M3allemPDFPipeline(config)
-    │                                  .run_file(pdf_path)   — single PDF
-    │                                  .run_folder(folder)   — batch all PDFs
-    │                              Saves per PDF inside output_dir/<pdf_stem>/:
-    │                                  pages/page_XX.md       per-page Markdown
-    │                                  full_course.md         combined Markdown
-    │                                  structured_data.json   per-page entries
-    │                                  chunks.json            flat chunk list
-    │                                                         ← Phase 2 input
-    │                                  summary.json           run statistics
-    │                              Optional HuggingFace Hub push
-    │
-    └── main.py                  CLI entry point
-                                   python -m src.phase1_extraction.main [options]
-                                   --input  path/to/file.pdf OR path/to/folder/
-                                   --output data/extracted/
-                                   --no-vlm   CPU text-only (no GPU needed)
-                                   --push-to-hub
-                                   --subject / --level overrides
+├── phase1_extraction/           Phase 1 Python package ✅ Done
+│   ├── __init__.py
+│   ├── config.py                BacLevel / Subject / Specialization enums,
+│   │                              PipelineConfig, FileMetadata with auto-detection
+│   ├── pdf_processor.py         PyMuPDF (fitz) wrapper
+│   ├── extractor.py             VLMExtractor (Qwen) + TextExtractor (CPU fallback)
+│   ├── structurer.py            Markdown chunker, content-type detector, chunk_id generator
+│   ├── pipeline.py              run_file() / run_folder() orchestrator
+│   └── main.py                  CLI: --input, --output, --no-vlm, --push-to-hub
+│
+├── phase2_rag/                  Phase 2 Python package ✅ Done
+│   ├── __init__.py              Exports RAGRetriever
+│   ├── config.py                Settings (embedding model, ChromaDB path, HF repos)
+│   ├── embedder.py              build_index(): downloads HF chunks, embeds into ChromaDB
+│   ├── retriever.py             RAGRetriever: loads ChromaDB, returns top-K chunks
+│   └── main.py                  Kaggle entry point: python -m src.phase2_rag.main --push-to-hub
+│
+├── phase3_finetune/             Phase 3 — Kaggle fine-tuning script ⏯ To build
+│
+└── phase4_backend/              Phase 4 — FastAPI server (Railway) 🆕 New
+    ├── __init__.py
+    ├── main.py                  FastAPI app entry point
+    ├── routers/
+    │   ├── ask.py               POST /api/ask endpoint
+    │   └── correct.py           POST /api/correct endpoint
+    ├── services/
+    │   ├── rag_service.py       Wraps RAGRetriever from phase2_rag (unchanged)
+    │   └── llm_service.py       HuggingFace Inference API client
+    └── models/
+        ├── request_models.py   Pydantic request schemas
+        └── response_models.py  Pydantic response schemas
 
-    phase2_rag/                  Phase 2 Python package (RAG Knowledge Base)
-    ├── __init__.py              Exports RAGRetriever
-    ├── config.py                Settings (embedding model, ChromaDB path, HF repos)
-    ├── embedder.py              build_index(): downloads HF chunks, embeds them,
-                                 and inserts into ChromaDB collections per subject
-    ├── retriever.py             RAGRetriever: loads ChromaDB, embeds student questions,
-                                 and returns top K relevant chunks
-    └── main.py                  Kaggle entry point to build the index and push to Hub
-                                   python -m src.phase2_rag.main --push-to-hub
+frontend/                        Phase 5 — Next.js app (Vercel) 🆕 New
+├── app/                         Next.js App Router
+│   ├── layout.js               Root layout (fonts, global styles)
+│   ├── page.js                 Landing page (/)
+│   └── app/                    Student interface (/app)
+│       ├── chat/page.js        Q&A Chat
+│       ├── correction/page.js  Exercise Correction
+│       ├── exercise/page.js    Generate Exercise (placeholder)
+│       └── resume/page.js      Generate Resume (placeholder)
+├── components/
+│   ├── ui/                     Base components (Button, Card, Input…)
+│   ├── chat/                   ChatWindow, MessageBubble, InputBar
+│   ├── correction/             FileUpload, CorrectionResult
+│   └── layout/                 Sidebar, SubjectSelector
+├── lib/api.js                   API call functions (fetch to Railway backend)
+├── styles/globals.css           Global CSS (from Figma/Stitch template)
+├── public/                      Static assets (logo, icons)
+├── package.json
+└── next.config.js
 ```
 
 
@@ -174,11 +167,12 @@ src/
 
 | Phase | Objective | Tools | Status |
 |---|---|---|---|
-| **1 — PDF Extraction** | 2Bac PDFs (Maths/Physics/English) → Markdown chunks | Qwen2.5-VL-2B, PyMuPDF, Kaggle T4 | ✅ Complete |
-| **2 — RAG Knowledge Base** | Embed all chunks → persistent ChromaDB (pre-built KB) | multilingual-MiniLM-L12-v2, ChromaDB | 🟡 In Progress |
+| **1 — PDF Extraction** | 2Bac PDFs → Markdown chunks | Qwen2.5-VL-2B, PyMuPDF, Kaggle T4 | ✅ Complete |
+| **2 — RAG Knowledge Base** | Embed all chunks → persistent ChromaDB | multilingual-MiniLM-L12-v2, ChromaDB | 🟡 In Progress |
 | **3 — Fine-Tuning** | Train Qwen on 2Bac Q&A style (French/English) | Qwen2.5-1.5B, LoRA, Unsloth, Kaggle T4 | ⬜ Not started |
-| **4 — Gradio App** | Q&A Chat + Exercise Correction (working); other tabs as UI placeholders | Gradio, HuggingFace Spaces | ⬜ Not started |
-| **5 — Integration** | Wire all phases, end-to-end test with real 2Bac questions | All of the above | ⬜ Not started |
+| **4 — FastAPI Backend** | Wrap RAG + LLM into a REST API | FastAPI, Uvicorn, Railway | ⬜ Not started |
+| **5 — Next.js Frontend** | Landing page + student app UI | Next.js, Vercel, CSS from design template | ⬜ Not started |
+| **6 — Integration** | Wire all 3 servers, end-to-end test | All of the above | ⬜ Not started |
 
 ---
 
@@ -187,11 +181,12 @@ src/
 **Active phase:** Phase 2 — RAG Knowledge Base
 
 ### ✅ Completed
+- **Architecture upgraded:** 3-server split confirmed — Vercel (Next.js) + Railway (FastAPI) + HuggingFace (model + data).
 - **Phase 1 (Extraction):** Successfully extracted all 2Bac PDFs on Kaggle and pushed 965 structured chunks to HuggingFace dataset `Saad-Elouakate/AI-Adaptive-Learning`.
 - **Phase 2 (RAG):** Created the `src/phase2_rag/` module:
   - `config.py` — embedding model and repository settings
   - `embedder.py` — logic to download chunks from HF and embed into ChromaDB
-  - `retriever.py` — RAGRetriever wrapper for the Gradio app
+  - `retriever.py` — RAGRetriever wrapper for the FastAPI backend
   - `main.py` — Kaggle script to orchestrate indexing and pushing
 
 ### ⏳ Next Action
@@ -201,11 +196,13 @@ Run `src/phase2_rag/main.py` on Kaggle to process the 965 chunks, build the Chro
 
 ## Status Log
 
-[2026-06-03]  Phase 1 Complete & Phase 2 Created
-              - Successfully ran Phase 1 extraction on 2Bac PDFs in Kaggle
-              - Pushed extracted chunks (e.g. 965 chunks from English exam) to HF Dataset
-              - Created `src/phase2_rag/` module (embedder, retriever, config, main)
-              - Added documentation for Phase 2 components
+[2026-06-05]  Architecture upgraded to 3-server strategy
+              - Dropped Gradio / HuggingFace Spaces approach
+              - New stack: Vercel (Next.js) + Railway (FastAPI) + HuggingFace (AI)
+              - Added Phase 4 (FastAPI Backend) and Phase 5 (Next.js Frontend)
+              - Frontend styling will follow a Figma/Stitch design template
+              - Streaming responses deferred (full answer at once for MVP)
+              - Private school / educator tier removed from this project
 
 [2026-06-03]  MVP scope finalised via questionnaire
               - Target year: 2ème Bac only
