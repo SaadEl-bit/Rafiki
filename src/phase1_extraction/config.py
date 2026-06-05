@@ -36,13 +36,8 @@ class Subject(str, Enum):
 
 
 class Specialization(str, Enum):
-    """2Bac streams."""
-    SCIENCES_MATHS_A    = "Sciences Maths A"
-    SCIENCES_MATHS_B    = "Sciences Maths B"
-    SVT_STREAM          = "Sciences de la Vie et de la Terre"
-    PC_STREAM           = "Sciences Physiques-Chimiques"
-    LETTRES             = "Lettres et Sciences Humaines"
-    ORIGINAL_TEACHING   = "Enseignement Original"
+    """2Bac streams (MVP target only PC)."""
+    PC_STREAM = "Sciences Physiques-Chimiques"
 
 
 # ---------------------------------------------------------------------------
@@ -71,7 +66,7 @@ class PipelineConfig:
     # ── Vision-Language Model ─────────────────────────────────────────────
     # We use the HuggingFace ID by default. Kaggle will download it automatically
     # using its fast internet connection.
-    model_name: str = "Qwen/Qwen2.5-VL-2B-Instruct"
+    model_name: str = "Qwen/Qwen3-VL-2B-Instruct"
     use_vlm: bool = True          # False → fast text-only fallback (CPU)
     max_new_tokens: int = 2048
     temperature: float = 0.1
@@ -95,7 +90,7 @@ class PipelineConfig:
     default_subject: str = Subject.MATHEMATIQUES.value   # fallback if filename unrecognised
     default_level: str   = BacLevel.DEUXIEME_BAC.value   # FIXED: 2Bac only
     default_language: str = "fr"                          # French for Maths & PC; English overrides below
-    default_specialization: str = Specialization.SCIENCES_MATHS_A.value
+    default_specialization: str = Specialization.PC_STREAM.value
     curriculum: str = "Moroccan National Bac Curriculum 2ème Bac"
 
 

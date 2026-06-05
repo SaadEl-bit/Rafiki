@@ -17,16 +17,47 @@ M3allem is an Adaptive AI tutor designed specifically for Moroccan students. The
   * 🔶 **Resume Generation** — UI placeholder in MVP; connected to AI post-MVP
 * **RAG is permanent:** Fine-tuning teaches the model *how* to answer (style, format, step-by-step reasoning). RAG provides *what* to answer about (specific theorems, formulas, examples). Both are always used together at inference time.
 
-### **Private School & Educator Tier (Post-MVP)**
-* **Student Level Detection** — Diagnostic questions to evaluate baseline understanding upon registration.
-* **Teacher Dashboard** — Create virtual classrooms, invite students, track scores and progress.
-* **Adaptive Teaching** — Analytics help teachers adapt their methods per student.
 
 ---
 
-## **2. MVP Model Architecture**
 
-The MVP uses a lean, **100% free-tier** AI stack. The goal is to validate the full pipeline with small samples before scaling.
+## **2. Production Architecture (3-Server Split)**
+
+The project uses a professional **3-server architecture** — each layer has its own dedicated hosting platform, all free-tier for the MVP.
+
+### **Architecture Diagram**
+
+```
+STUDENT'S BROWSER
+        │  HTTPS
+        ▼
+┌─────────────────────────────────────────────┐
+│  VERCEL — Frontend                          │
+│  Next.js 14+ · JavaScript                  │
+│  / → Landing page                          │
+│  /app/chat → Q&A Chat                      │
+│  /app/correction → Exercise Correction     │
+│  /app/exercise → Generate Exercise (later) │
+│  /app/resume → Generate Resume (later)     │
+└─────────────────┬───────────────────────────┘
+                  │  POST /api/ask
+                  │  POST /api/correct
+                  ▼
+┌─────────────────────────────────────────────┐
+│  RAILWAY — Backend                          │
+│  Python 3.11 · FastAPI · Uvicorn            │
+│  RAGRetriever (Phase 2, reused as-is)       │
+│  HuggingFace Inference API client           │
+└─────────────────┬───────────────────────────┘
+                  │  HF Serverless Inference API
+                  ▼
+┌─────────────────────────────────────────────┐
+│  HUGGINGFACE — AI Layer                     │
+│  Dataset: chunks (Phase 1 output)           │
+│  Dataset: ChromaDB index (Phase 2 output)   │
+│  Model: Qwen2.5-1.5B fine-tuned (Phase 3)  │
+└─────────────────────────────────────────────┘
+```
 
 ### **Component Overview**
 
@@ -34,9 +65,10 @@ The MVP uses a lean, **100% free-tier** AI stack. The goal is to validate the fu
 |---|---|---|---|
 | **PDF Parser** | `Qwen2.5-VL-2B-Instruct` | Reads PDF page images, extracts math, diagrams, and text as structured Markdown | Kaggle (free T4 GPU) |
 | **Embedding Model** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Converts text chunks to vectors for semantic search (supports French + English) | CPU (Kaggle / local) |
-| **Vector Database** | `ChromaDB` | Stores and searches embedded 2Bac course chunks — **ships with the app as the pre-built KB** | On-disk, CPU |
+| **Vector Database** | `ChromaDB` | Stores and searches embedded 2Bac course chunks — pre-built KB downloaded at backend startup | On-disk, Railway |
 | **Fine-tuned LLM** | `Qwen2.5-1.5B-Instruct` (LoRA fine-tuned) | Generates step-by-step Q&A answers and exercise corrections in Moroccan 2Bac curriculum style | HuggingFace Serverless Inference API (free) |
-| **Frontend App** | `Gradio` on HuggingFace Spaces | Student-facing interface: Q&A Chat (working), Exercise Correction (working), other tabs as UI placeholders | HuggingFace Spaces (CPU Basic, free) |
+| **Backend API** | `FastAPI` on Railway | Exposes `/api/ask` and `/api/correct` — handles RAG retrieval and LLM calls | Railway (free tier) |
+| **Frontend App** | `Next.js` on Vercel | Student-facing interface: Landing page + Q&A Chat + Exercise Correction + UI placeholders | Vercel (free tier) |
 
 ### **How HuggingFace Serverless Inference API Works (Step by Step)**
 
@@ -45,14 +77,14 @@ This is how the fine-tuned model is served to users **without any GPU server cos
 1. **You fine-tune** the `Qwen2.5-1.5B-Instruct` model using LoRA on Kaggle (Phase 3).
 2. **You upload** the fine-tuned model weights to your private HuggingFace model repository.
 3. **HuggingFace hosts** the model on their own servers (free tier, with rate limits).
-4. **Your Gradio app** sends a request to the HuggingFace Inference API endpoint:
+4. **Your FastAPI backend** (on Railway) sends a request to the HuggingFace Inference API:
    ```
-   POST https://api-inference.huggingface.co/models/your-username/m3allem-model
-   Headers: { Authorization: "Bearer YOUR_HF_TOKEN" }
-   Body: { inputs: "[RAG context] + [student question]" }
+   POST https://api-inference.huggingface.co/models/Saad-Elouakate/m3allem-qwen
+   Headers: { Authorization: "Bearer HF_TOKEN" }
+   Body: { inputs: "[RAG context chunks] + [student question]" }
    ```
 5. **HuggingFace runs** the model and returns the generated answer.
-6. **Gradio displays** the answer to the student.
+6. **FastAPI** returns the answer to the Next.js frontend, which displays it to the student.
 
 > **Free tier limits:** ~1,000 requests/day, cold start possible (model loads in ~20 sec if idle). Sufficient for MVP testing.
 
@@ -161,47 +193,66 @@ The model selected (`Qwen2.5` family) already has strong pre-trained knowledge o
 
 ---
 
-### **Phase 4 — Gradio App (Frontend)**
-> **Objective:** Build the student-facing interface on HuggingFace Spaces.
+### **Phase 4 — FastAPI Backend**
+> **Objective:** Expose RAG retrieval and LLM inference as a REST API that the frontend can call.
 
-**Tools:** `Gradio`, HuggingFace Spaces (CPU Basic, free), `chromadb`, `sentence-transformers`
+**Tools:** `FastAPI`, `Uvicorn`, `Pydantic`, Railway (free tier)
 
-**MVP Test:** A working Gradio app with Q&A Chat and Exercise Correction connected to real AI, and all other tabs as UI placeholders.
+**MVP Target:** A deployed Railway API with two working endpoints: `/api/ask` and `/api/correct`.
 
 **Actions:**
-1. Create a HuggingFace Space (Gradio, Blank template, CPU Basic, Public).
-2. Load the pre-built ChromaDB (from Phase 2) at app startup — students can use the app without uploading anything.
-3. Build the Gradio interface with tabs:
-   * ✅ **Q&A Chat** — Student types a question → RAG retrieves top-3 chunks from the pre-built KB → fine-tuned LLM generates a step-by-step answer in French or English.
-   * ✅ **Exercise Correction** — Student uploads a PDF or image of an exercise (blank or with their answers) → AI corrects it like a professor with full solution.
-   * 🔶 **Generate Exercise** — UI tab exists, shows a static example placeholder.
-   * 🔶 **Generate Resume** — UI tab exists, shows a static example placeholder.
-   * 🔶 **Upload your own PDF** — UI exists, not connected to RAG yet.
-   * 🔶 **Level / Subject selection** — UI exists, no backend filtering yet.
-4. Store the HuggingFace API token as a **Secret** in Space settings (not in code).
+1. Create `src/phase4_backend/` with FastAPI app structure (routers, services, models).
+2. Wrap `RAGRetriever` (Phase 2) into a `rag_service.py` — no code changes to Phase 2.
+3. Create `llm_service.py` — calls the HuggingFace Inference API with the RAG context + student question.
+4. Implement endpoints:
+   * `POST /api/ask` — receives question + subject → returns AI answer
+   * `POST /api/correct` — receives uploaded file + subject → returns step-by-step correction
+   * `GET /health` — health check for Railway
+5. Set environment variables on Railway (HF_TOKEN, HF_MODEL_ID, ALLOWED_ORIGINS).
+6. Deploy to Railway via Git push.
 
-**Success Condition:** App loads without upload, student asks a 2Bac Maths question, gets a correct step-by-step answer. Exercise correction also works. ✅
+**Success Condition:** `POST /api/ask` with a 2Bac Maths question returns a correct, formatted answer. ✅
 
 ---
 
-### **Phase 5 — Full Integration & End-to-End Test**
-> **Objective:** Wire all components together and validate the complete pipeline works with real data.
+### **Phase 5 — Next.js Frontend**
+> **Objective:** Build the student-facing web interface and deploy to Vercel.
 
-**Tools:** All components from Phases 1–4.
+**Tools:** `Next.js 14+`, JavaScript, CSS (from Figma/Stitch design template), Vercel
 
-**MVP Test:** One complete flow using 2Bac content: no upload → ask a Maths question → get answer → upload an exercise for correction.
+**MVP Target:** A deployed Vercel app with a landing page and the two working AI features.
 
 **Actions:**
-1. Upload the Phase 3 fine-tuned model to HuggingFace and enable the Serverless Inference API.
-2. Replace placeholder model output in the Gradio app with real HuggingFace Inference API calls.
-3. Test the complete user flow end-to-end:
-   - Open the app (no upload needed)
+1. Initialize `frontend/` as a Next.js 14+ project (App Router, JavaScript).
+2. Build the landing page (`/`) — hero section, feature overview, CTA button.
+3. Build the student app interface (`/app`) with:
+   * ✅ **Q&A Chat** (`/app/chat`) — text input → calls `POST /api/ask` → displays formatted answer with LaTeX math.
+   * ✅ **Exercise Correction** (`/app/correction`) — drag-and-drop PDF/image upload → calls `POST /api/correct` → displays step-by-step correction.
+   * 🔶 **Generate Exercise** (`/app/exercise`) — UI placeholder, connected to AI post-MVP.
+   * 🔶 **Generate Resume** (`/app/resume`) — UI placeholder, connected to AI post-MVP.
+4. Apply the CSS design from the provided Figma/Stitch template.
+5. Set `NEXT_PUBLIC_API_URL` environment variable on Vercel pointing to the Railway backend.
+6. Deploy to Vercel via Git push.
+
+**Success Condition:** Student opens the Vercel URL, navigates to Chat, asks a 2Bac question, gets a formatted answer from the Railway backend. ✅
+
+---
+
+### **Phase 6 — Full Integration & End-to-End Test**
+> **Objective:** Validate the complete 3-server pipeline works together with real 2Bac data.
+
+**Tools:** All components from Phases 1–5.
+
+**Actions:**
+1. Test the complete user flow:
+   - Open the Vercel URL (no upload needed)
    - Ask: *"Explique-moi comment dériver f(x) = x³ + 2x"*
    - Upload an exercise PDF → get professor-style correction
    - Verify answers are grounded in the pre-built 2Bac knowledge base
-4. Fix any prompt formatting, retrieval quality, or API latency issues.
+2. Fix any CORS issues, prompt formatting, retrieval quality, or API latency issues.
+3. Verify Railway cold-start time is acceptable; add a loading indicator in the frontend.
 
-**Success Condition:** A working end-to-end demo: student opens app, asks a 2Bac question, gets a correct step-by-step answer without uploading anything. ✅
+**Success Condition:** Full end-to-end demo working: student opens Vercel app, asks a 2Bac question, gets a correct answer served via Railway + HuggingFace. ✅
 
 ---
 
@@ -213,30 +264,31 @@ The model selected (`Qwen2.5` family) already has strong pre-trained knowledge o
 | RAG index building (Phase 2) | Kaggle or local laptop (CPU) | Free |
 | Model fine-tuning (Phase 3) | Kaggle (T4 GPU) | Free |
 | Dataset & model hosting | HuggingFace (free account) | Free |
-| Gradio app hosting (Phase 4) | HuggingFace Spaces (CPU Basic) | Free |
-| LLM inference for users (Phase 5) | HuggingFace Serverless Inference API | Free (rate-limited) |
-| **TOTAL MVP COST** | | **$0** |
+| LLM inference (Phase 4 backend calls) | HuggingFace Serverless Inference API | Free (rate-limited) |
+| Backend API hosting (Phase 4) | Railway (free $5/month credit) | ~Free for MVP |
+| Frontend hosting (Phase 5) | Vercel (free tier) | Free |
+| **TOTAL MVP COST** | | **~$0** |
 
-> **Post-MVP (Production):** Migrate fine-tuning to RunPod (RTX 3090, ~$0.34/hr) for the full dataset, and upgrade HuggingFace Space to GPU for lower latency inference.
+> **Post-MVP (Production):** Migrate fine-tuning to RunPod (RTX 3090, ~$0.34/hr) for the full dataset. Upgrade Railway to a paid plan (~$5–20/month) for production traffic. Add Supabase (free tier) for user accounts and progress tracking when authentication is needed.
 
 ---
 
 ## **6. Project Status**
 
-### **Current Phase:** Phase 1 — PDF Extraction Pipeline
+### **Current Phase:** Phase 2 — RAG Knowledge Base
 
 ### **Completed:**
 * MVP scope finalised: **2ème Bac only**, subjects: **Mathématiques · Physique-Chimie · English**.
-* Architecture confirmed: pre-built ChromaDB as default KB (no upload required); RAG is permanent even after fine-tuning.
-* Fully working MVP features: **Q&A Chat** and **Exercise Correction**. All other features are frontend-only placeholders.
-* HuggingFace Space created (Gradio, Blank, CPU Basic, Public).
-* GitHub repository initialized.
-* Kaggle pipeline script (`pdf_to_markdown_pipeline.py`) written, tested on 6-page PDF → verified Markdown + chunks output.
+* Architecture upgraded: **3-server split** — Vercel (Next.js) + Railway (FastAPI) + HuggingFace (model + data).
+* Deployment strategy confirmed: no Gradio, full professional stack with a landing page.
+* Phase 1 complete: 965 structured chunks pushed to `Saad-Elouakate/AI-Adaptive-Learning` on HuggingFace.
 * `src/phase1_extraction/` module written (6 files, CPU fallback mode, batch folder support).
+* `src/phase2_rag/` module created (embedder, retriever, config, main).
+* GitHub repository initialized.
 
 ### **Resolved Blockers:**
 * Original script used `Qwen2.5-VL-7B-Instruct` in bfloat16 → **OOM on T4** (14.5 GB VRAM).
 * **Fix:** Using `Qwen2.5-VL-2B-Instruct` → ~4 GB VRAM, ~12 GB headroom. ✅
 
 ### **Next Action:**
-Run `pdf_to_markdown_pipeline.py` on Kaggle against **all 5 PDFs in `Document-Data-Set/2bac/`** (Maths, Physics, English), verify `chunks.json` quality for all three subjects, then move to Phase 2 to build the persistent 2Bac ChromaDB.
+Run `src/phase2_rag/main.py` on Kaggle to embed the 965 chunks into ChromaDB and push the index to `Saad-Elouakate/AI-Adaptive-Learning-Index` on HuggingFace.
