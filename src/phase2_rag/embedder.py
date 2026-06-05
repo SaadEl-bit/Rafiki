@@ -92,7 +92,7 @@ def build_index(config) -> dict[str, int]:
         rows = split_data.to_list()
         valid_rows = [
             r for r in rows
-            if r.get("content_string") and len(str(r["content_string"]).strip()) >= config.min_chunk_chars
+            if r.get("content") and len(str(r["content"]).strip()) >= config.min_chunk_chars
         ]
         skipped = len(rows) - len(valid_rows)
         if skipped:
@@ -102,7 +102,7 @@ def build_index(config) -> dict[str, int]:
             logger.warning("No valid chunks in split '%s' — skipping.", split_name)
             continue
 
-        texts = [str(r["content_string"]) for r in valid_rows]
+        texts = [str(r["content"]) for r in valid_rows]
         ids   = [str(r["chunk_id"]) for r in valid_rows]
         metadatas = [
             {
