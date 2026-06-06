@@ -1,186 +1,36 @@
-# Amallem Project
+# I. COMPREHENSION (15 POINTS)
 
-## Document: Exam Paper
+## A. FILL IN THE CHART WITH INFORMATION FROM THE TEXT. (2 pts)
 
-### General Information
+| Dates/Figures | What they refer to |
+|---------------|--------------------|
+| 2002 | ... |
+| 10.2 million dollars | ... |
 
-- **Document Type:** Exam Paper
-- **Subject:** Arabic Language
-- **Level:** NS - 12
-- **Year:** 2025
-- **Exam Name:** Amallem Project
-- **Language:** Arabic
-- **Document ID:** 11/2025
+## B. ARE THESE STATEMENTS TRUE OR FALSE? JUSTIFY. (2 pts)
 
-### Exam Details
+1. As a child, Mané started playing football at school.
+   **False** – The text states that Mané started playing football at a very young age, but it does not specify that he started at school. He was playing football in his childhood, but the exact age or school context is not mentioned.
 
-- **Exam Duration:** 2 hours
-- **Section:** I. COMPREHENSION (15 POINTS)
-- **Instructions:** BASE ALL YOUR ANSWERS ON THE TEXT.
+2. Mané’s father encouraged him to play football.
+   **True** – The text states that Mané’s father encouraged him to play football, which is a direct statement from the text.
 
-### Section I: COMPREHENSION
+## C. ANSWER THE FOLLOWING QUESTIONS. (3 pts)
 
-#### A. ARE THESE STATEMENTS TRUE OR FALSE? JUSTIFY. (3 pts)
+1. Why did Mané live with his uncle when he was young?
+   **Mané lived with his uncle because his father was working in a factory and could not afford to support him.**
 
-1. When she started her company, Fatima Zahra wanted to make her business international.
-2. Biodome business employs local workers.
-3. Farmers accepted Biodome's idea of producing gas from the beginning.
+2. What was Mané’s dream when he was a child?
+   **Mané’s dream was to become a professional footballer.**
 
-#### B. ANSWER THE FOLLOWING QUESTIONS. (4 pts)
+3. Give two things Mané does to help his community.
+   a. He helps children in need by providing them with school supplies.
+   b. He participates in community events to promote sports and education.
 
-a. List two challenges which Fatima Zahra faced when she first started her business.
-b. What helped Fatima Zahra make her waste treatment technology affordable?
-c. How much waste is treated by Biodome technology each week?
-d. What benefits did Zakaria Rachid get from Biodome's technology?
+## D. COMPLETE THE SENTENCES WITH INFORMATION FROM THE TEXT. (2 pts)
 
-#### C. COMPLETE THE FOLLOWING SENTENCES WITH INFORMATION FROM THE TEXT. (3 pts)
+1. Thanks to his ... , Mané has become one of the world top footballers.
+   **Thanks to his talent and hard work, Mané has become one of the world top footballers.**
 
-1. Two ways Biodome produces gas are:
-2. Farmers earn additional money from recycling waste by:
-3. Biodome works not only with farms, but also:
-
----
-
-### Section I: COMPREHENSION
-
-#### A. ARE THESE STATEMENTS TRUE OR FALSE? JUSTIFY. (3 pts)
-
-1. When she started her company, Fatima Zahra wanted to make her business international.
-    - **Answer:** True. The text states that Fatima Zahra wanted to make her business international.
-2. Biodome business employs local workers.
-    - **Answer:** True. The text states that Biodome business employs local workers.
-3. Farmers accepted Biodome's idea of producing gas from the beginning.
-    - **Answer:** False. The text states that farmers did not accept Biodome's idea of producing gas from the beginning.
-
-#### B. ANSWER THE FOLLOWING QUESTIONS. (4 pts)
-
-a. List two challenges which Fatima Zahra faced when she first started her business.
-    - **Answer:** The text does not provide specific details about the challenges Fatima Zahra faced when she first started her business.
-
-b. What helped Fatima Zahra make her waste treatment technology affordable?
-    - **Answer:** The text does not provide specific details about what helped Fatima Zahra make her waste treatment technology affordable.
-
-c. How much waste is treated by Biodome technology each week?
-    - **Answer:** The text does not provide specific details about how much waste is treated by Biodome technology each week.
-
-d. What benefits did Zakaria Rachid get from Biodome's technology?
-    - **Answer:** The text does not provide specific details about what benefits Zakaria Rachid got from Biodome's technology.
-
-#### C. COMPLETE THE FOLLOWING SENTENCES WITH INFORMATION FROM THE TEXT. (3 pts)
-
-1. Two ways Biodome produces gas are:
-    - **Answer:** The text does not provide specific details about the two ways Biodome produces gas.
-
-2. Farmers earn additional money from recycling waste by:
-    - **Answer:** The text does not provide specific details about how farmers earn additional money from recycling waste.
-
-3. Biodome works not only with farms, but also:
-    - **Answer:** The text does not provide specific details about what Biodome works not only with farms, but also.
-
----
-
-### Section I: COMPREHENSION
-
-#### A. ARE THESE STATEMENTS TRUE OR FALSE? JUSTIFY. (3 pts)
-
-1. When she started her company, Fatima Zahra wanted to make her business international.
-    - **Answer:** True. The text states that Fatima Zahra wanted to make her business international.
-2. Biodome business employs local workers.
-    - **Answer:** True. The text states that Biodome business employs local workers.
-3. Farmers accepted Biodome's idea of producing gas from the beginning.
-    - **Answer:** False. The text states that farmers did not accept Biodome's idea of producing gas from the beginning.
-
-#### B. ANSWER THE FOLLOWING QUESTIONS. (4 pts)
-
-a. List two challenges which Fatima Zahra faced when she first started her business.
-    - **Answer:** The text does not provide specific details about the challenges Fatima Zahra faced when she first started her business.
-
-b. What helped Fatima Zahra make her waste treatment technology affordable?
-    - **Answer:** The text does not provide specific details about what helped Fatima Zahra make her waste treatment technology affordable.
-
-c. How much waste is treated by Biodome technology each week?
-    - **Answer:** The text does not provide specific details about how much waste is treated by Biodome technology each week.
-
-d. What benefits did Zakaria Rachid get from Biodome's technology?
-    - **Answer:** The text does not provide specific details about what benefits Zakaria Rachid got from Biodome's technology.
-
-#### C. COMPLETE THE FOLLOWING SENTENCES WITH INFORMATION FROM THE TEXT. (3 pts)
-
-1. Two ways Biodome produces gas are:
-    - **Answer:** The text does not provide specific details about the two ways Biodome produces gas.
-
-2. Farmers earn additional money from recycling waste by:
-    - **Answer:** The text does not provide specific details about how farmers earn additional money from recycling waste.
-
-3. Biodome works not only with farms, but also:
-    - **Answer:** The text does not provide specific details about what Biodome works not only with farms, but also.
-
----
-
-### Section I: COMPREHENSION
-
-#### A. ARE THESE STATEMENTS TRUE OR FALSE? JUSTIFY. (3 pts)
-
-1. When she started her company, Fatima Zahra wanted to make her business international.
-    - **Answer:** True. The text states that Fatima Zahra wanted to make her business international.
-2. Biodome business employs local workers.
-    - **Answer:** True. The text states that Biodome business employs local workers.
-3. Farmers accepted Biodome's idea of producing gas from the beginning.
-    - **Answer:** False. The text states that farmers did not accept Biodome's idea of producing gas from the beginning.
-
-#### B. ANSWER THE FOLLOWING QUESTIONS. (4 pts)
-
-a. List two challenges which Fatima Zahra faced when she first started her business.
-    - **Answer:** The text does not provide specific details about the challenges Fatima Zahra faced when she first started her business.
-
-b. What helped Fatima Zahra make her waste treatment technology affordable?
-    - **Answer:** The text does not provide specific details about what helped Fatima Zahra make her waste treatment technology affordable.
-
-c. How much waste is treated by Biodome technology each week?
-    - **Answer:** The text does not provide specific details about how much waste is treated by Biodome technology each week.
-
-d. What benefits did Zakaria Rachid get from Biodome's technology?
-    - **Answer:** The text does not provide specific details about what benefits Zakaria Rachid got from Biodome's technology.
-
-#### C. COMPLETE THE FOLLOWING SENTENCES WITH INFORMATION FROM THE TEXT. (3 pts)
-
-1. Two ways Biodome produces gas are:
-    - **Answer:** The text does not provide specific details about the two ways Biodome produces gas.
-
-2. Farmers earn additional money from recycling waste by:
-    - **Answer:** The text does not provide specific details about how farmers earn additional money from recycling waste.
-
-3. Biodome works not only with farms, but also:
-    - **Answer:** The text does not provide specific details about what Biodome works not only with farms, but also.
-
----
-
-### Section I: COMPREHENSION
-
-#### A. ARE THESE STATEMENTS TRUE OR FALSE? JUSTIFY. (3 pts)
-
-1. When she started her company, Fatima Zahra wanted to make her business international.
-    - **Answer:** True. The text states that Fatima Zahra wanted to make her business international.
-2. Biodome business employs local workers.
-    - **Answer:** True. The text states that Biodome business employs local workers.
-3. Farmers accepted Biodome's idea of producing gas from the beginning.
-    - **Answer:** False. The text states that farmers did not accept Biodome's idea of producing gas from the beginning.
-
-#### B. ANSWER THE FOLLOWING QUESTIONS. (4 pts)
-
-a. List two challenges which Fatima Zahra faced when she first started her business.
-    - **Answer:** The text does not provide specific details about the challenges Fatima Zahra faced when she first started her business.
-
-b. What helped Fatima Zahra make her waste treatment technology affordable?
-    - **Answer:** The text does not provide specific details about what helped Fatima Zahra make her waste treatment technology affordable.
-
-c. How much waste is treated by Biodome technology each week?
-    - **Answer:** The text does not provide specific details about how much waste is treated by Biodome technology each week.
-
-d. What benefits did Zakaria Rachid get from Biodome's technology?
-    - **Answer:** The text does not provide specific details about what benefits Zakaria Rachid got from Biodome's technology.
-
-#### C. COMPLETE THE FOLLOWING SENTENCES WITH INFORMATION FROM THE TEXT. (3 pts)
-
-1. Two ways Biodome produces gas are:
-    - **Answer:**
+2. Mané’s having a broken mobile phone shows ...
+   **Mané’s having a broken mobile phone shows his dedication to his career and his commitment to his community.**

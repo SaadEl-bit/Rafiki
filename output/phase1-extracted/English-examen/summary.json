@@ -3,11 +3,12 @@
   "subject": "English",
   "level": "2Bac",
   "language": "en",
-  "pages_processed": 6,
-  "total_chunks": 965,
-  "total_chars": 28285,
+  "pages_processed": 5,
+  "total_chunks": 14,
+  "total_chars": 11776,
   "total_math": 0,
   "content_types": {
-    "course_content": 965
+    "course_content": 13,
+    "proof": 1
   }
 }
