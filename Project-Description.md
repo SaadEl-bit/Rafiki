@@ -1,11 +1,11 @@
-# **Project Description: M3allem — Moroccan Adaptive AI Tutor Platform**
+# **Project Description: Rafiki — رفيقي — Moroccan Adaptive AI Tutor Platform**
 
 ---
 
 ## **1. Core Vision & Features**
 
 ### **Overview**
-M3allem is an Adaptive AI tutor designed specifically for Moroccan students. The **MVP targets 2ème Bac** (Year 12) with three subjects: **Mathématiques, Physique-Chimie, and English**. It operates in **French** (for Maths/Physics) or **English** (for the English subject). Arabic-language subjects (Philosophie, Arabe, Éducation Islamique) are planned for a post-MVP phase.
+Rafiki — رفيقي — is an Adaptive AI tutor designed specifically for Moroccan students. The **MVP targets 2ème Bac** (Year 12) with three subjects: **Mathématiques, Physique-Chimie, and English**. It operates in **French** (for Maths/Physics) or **English** (for the English subject). Arabic-language subjects (Philosophie, Arabe, Éducation Islamique) are planned for a post-MVP phase.
 
 ### **Standard Student Tier (MVP Target)**
 * **Pre-Loaded Knowledge Base:** The app ships with a pre-built ChromaDB built from all 2Bac PDFs — students can ask questions **immediately, without uploading anything**.
@@ -34,7 +34,7 @@ STUDENT'S BROWSER
 ┌─────────────────────────────────────────────┐
 │  VERCEL — Frontend                          │
 │  Next.js 14+ · JavaScript                  │
-│  / → Landing page                          │
+│  / → Landing page (what is Rafiki, features)│
 │  /app/chat → Q&A Chat                      │
 │  /app/correction → Exercise Correction     │
 │  /app/exercise → Generate Exercise (later) │
