@@ -1,6 +1,7 @@
-# M3allem — Moroccan Adaptive AI Tutor
+# Rafiki — رفيقي — Moroccan Adaptive AI Tutor
 
-> **An AI-powered study assistant for Moroccan 2ème Bac students.**
+> **An AI-powered study companion for Moroccan 2ème Bac students.**
+> *"رفيقك في الدراسة — Ton compagnon pour le Bac"*
 > The app comes with a pre-built knowledge base from the 2Bac curriculum (Maths, Physics, English).
 > Students can ask questions immediately — no upload needed — and also add their own documents.
 > Answers are always grounded in the curriculum via RAG, in **French** or **English** depending on the subject.
@@ -90,7 +91,7 @@ Load pre-built ChromaDB  ← built from YOUR 2Bac PDFs (Maths · Physics · Engl
                ▼
 ┌─────────────────────────────────┐
 │  Phase 5 — Next.js Frontend     │  Next.js 14+ (App Router)
-│  / → Landing page              │  Vercel (free tier)
+│  / → Landing page (Rafiki)        │  Vercel (free tier)
 │  /app/chat → Q&A Chat          │  CSS from Figma/Stitch template
 │  /app/correction → Correction  │
 └─────────────────────────────────┘
