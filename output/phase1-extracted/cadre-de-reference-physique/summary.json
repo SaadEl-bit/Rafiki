@@ -1,0 +1,23 @@
+{
+  "source_file": "cadre-de-reference-physique.pdf",
+  "subject": "Physique-Chimie",
+  "level": "2Bac",
+  "language": "fr",
+  "pages_processed": 28,
+  "total_chunks": 109,
+  "total_chars": 64784,
+  "total_math": 131,
+  "content_types": {
+    "definition": 3,
+    "proof": 1,
+    "exercise": 3,
+    "solution": 14,
+    "course_content": 73,
+    "summary": 2,
+    "example": 6,
+    "method": 4,
+    "formula": 1,
+    "remark": 1,
+    "property": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "source_file": "cadre-de-reference-english.pdf",
+  "subject": "English",
+  "level": "2Bac",
+  "language": "en",
+  "pages_processed": 10,
+  "total_chunks": 38,
+  "total_chars": 21542,
+  "total_math": 0,
+  "content_types": {
+    "course_content": 23,
+    "definition": 2,
+    "example": 13
+  }
+}

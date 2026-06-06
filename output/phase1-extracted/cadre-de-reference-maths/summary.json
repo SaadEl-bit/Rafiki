@@ -1,0 +1,18 @@
+{
+  "source_file": "cadre-de-reference-maths.pdf",
+  "subject": "Mathématiques",
+  "level": "2Bac",
+  "language": "fr",
+  "pages_processed": 5,
+  "total_chunks": 60,
+  "total_chars": 7941,
+  "total_math": 22,
+  "content_types": {
+    "course_content": 52,
+    "example": 1,
+    "theorem": 1,
+    "solution": 2,
+    "property": 3,
+    "definition": 1
+  }
+}
