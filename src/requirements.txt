@@ -1,0 +1,19 @@
+# ==========================================
+# M3allem - Kaggle Requirements
+# ==========================================
+# Run this in Kaggle: !pip install -r src/requirements.txt
+
+# --- Phase 1: PDF Extraction (Qwen2.5-VL-2B) ---
+transformers>=4.49.0
+qwen-vl-utils
+accelerate
+pymupdf
+Pillow
+
+# --- Phase 2: RAG Knowledge Base ---
+chromadb
+sentence-transformers
+
+# --- HuggingFace Utilities (Used in both phases) ---
+datasets
+huggingface_hub
