@@ -55,7 +55,7 @@ STUDENT'S BROWSER
 │  HUGGINGFACE — AI Layer                     │
 │  Dataset: chunks (Phase 1 output)           │
 │  Dataset: ChromaDB index (Phase 2 output)   │
-│  Model: Qwen2.5-1.5B fine-tuned (Phase 3)  │
+│  Model: Qwen/Qwen2.5-1.5B-Instruct LoRA fine-tuned (Phase 3) │
 └─────────────────────────────────────────────┘
 ```
 
@@ -66,7 +66,7 @@ STUDENT'S BROWSER
 | **PDF Parser** | `Qwen2.5-VL-2B-Instruct` | Reads PDF page images, extracts math, diagrams, and text as structured Markdown | Kaggle (free T4 GPU) |
 | **Embedding Model** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Converts text chunks to vectors for semantic search (supports French + English) | CPU (Kaggle / local) |
 | **Vector Database** | `ChromaDB` | Stores and searches embedded 2Bac course chunks — pre-built KB downloaded at backend startup | On-disk, Railway |
-| **Fine-tuned LLM** | `Qwen2.5-1.5B-Instruct` (LoRA fine-tuned) | Generates step-by-step Q&A answers and exercise corrections in Moroccan 2Bac curriculum style | HuggingFace Serverless Inference API (free) |
+| **Fine-tuned LLM** | `Qwen/Qwen2.5-1.5B-Instruct` (LoRA fine-tuned) | Generates step-by-step Q&A answers and exercise corrections in Moroccan 2Bac curriculum style after PDF/photo exercises are extracted to text | HuggingFace Serverless Inference API (free) |
 | **Backend API** | `FastAPI` on Railway | Exposes `/api/ask` and `/api/correct` — handles RAG retrieval and LLM calls | Railway (free tier) |
 | **Frontend App** | `Next.js` on Vercel | Student-facing interface: Landing page + Q&A Chat + Exercise Correction + UI placeholders | Vercel (free tier) |
 
@@ -74,12 +74,12 @@ STUDENT'S BROWSER
 
 This is how the fine-tuned model is served to users **without any GPU server cost**:
 
-1. **You fine-tune** the `Qwen2.5-1.5B-Instruct` model using LoRA on Kaggle (Phase 3).
+1. **You fine-tune** the `Qwen/Qwen2.5-1.5B-Instruct` model using LoRA on Kaggle (Phase 3).
 2. **You upload** the fine-tuned model weights to your private HuggingFace model repository.
 3. **HuggingFace hosts** the model on their own servers (free tier, with rate limits).
 4. **Your FastAPI backend** (on Railway) sends a request to the HuggingFace Inference API:
    ```
-   POST https://api-inference.huggingface.co/models/Saad-Elouakate/m3allem-qwen
+    POST https://api-inference.huggingface.co/models/Saad-Elouakate/rafiki-qwen
    Headers: { Authorization: "Bearer HF_TOKEN" }
    Body: { inputs: "[RAG context chunks] + [student question]" }
    ```
@@ -93,23 +93,33 @@ This is how the fine-tuned model is served to users **without any GPU server cos
 ## **3. Data Strategy**
 
 ### **A. MVP Dataset (2Bac — 3 subjects)**
-The MVP is built and validated on the **2ème Bac PDFs already collected** in `Document-Data-Set/2bac/`:
+The MVP is built and validated on **8 processed documents** in `output/phase1-extracted/`:
 
-| File | Subject | Use |
-|---|---|---|
-| `Maths-fonctions-cours.pdf` | Mathématiques | Pre-built KB |
-| `Maths-fonctions-corrige-serie-d-exercices.pdf` | Mathématiques | Pre-built KB + fine-tuning Q&A pairs |
-| `Physique-lois-de-newton-cours.pdf` | Physique-Chimie | Pre-built KB |
-| `English-cours.pdf` | English | Pre-built KB |
-| `English-examen.pdf` | English | Pre-built KB + fine-tuning Q&A pairs |
+| File | Subject | Type | Use |
+|---|---|---|---|
+| `Maths-fonctions-cours.pdf` | Mathématiques | Cours | Pre-built KB + Q&A triplets (definitions, theorems) |
+| `Maths-fonctions-corrige-serie-d-exercices.pdf` | Mathématiques | Exercices corrigés | Pre-built KB + Q&A triplets (exercise→solution pairs) |
+| `cadre-de-reference-maths/` | Mathématiques | Cadre référenciel | Q&A triplets (learning objectives) |
+| `Physique-lois-de-newton-cours-Exercices.pdf` | Physique-Chimie | Cours + Exercices | Pre-built KB + Q&A triplets |
+| `cadre-de-reference-physique/` | Physique-Chimie | Cadre référenciel | Q&A triplets (learning objectives) |
+| `English-cours.pdf` | English | Cours | Pre-built KB + Q&A triplets |
+| `English-examen.pdf` | English | Examen | Pre-built KB + Q&A triplets (exam questions) |
+| `cadre-de-reference-english/` | English | Cadre référenciel | Q&A triplets (learning objectives) |
 
-* **Phase 1:** All 5 PDFs → Markdown chunks via Qwen2.5-VL-2B on Kaggle.
+* **Phase 1:** All 8 documents → Markdown chunks via Qwen2.5-VL-2B on Kaggle.
 * **Phase 2:** All chunks → persistent ChromaDB (this becomes the pre-built KB that ships with the app).
-* **Phase 3:** Extract ~50–200 `(question, reasoning_steps, answer)` triplets from the exercise PDFs for fine-tuning style:
+* **Phase 3:** Extract `(question, reasoning_steps, answer)` triplets from ALL document types for fine-tuning style:
+  * **Cours** → convert definitions, theorems, properties, and examples into conceptual Q&A
+  * **Exercices corrigés** → pair each exercise with its step-by-step solution
+  * **Cadre référenciel** → convert learning objectives into competency-based Q&A
+  * **English exam** → convert comprehension points into English Q&A
+  
+  Target: **~150–400 triplets** across all 3 subjects for a robust style shift.
+  
   ```json
   {
     "input": "Déterminer la dérivée de f(x) = x³ + 2x",
-    "thinking": "J'applique la règle de dérivation: (x^n)' = n·x^(n-1)...",
+    "thinking": "J'applique la règle de dérivation: (x^n)' = n·x^(n-1). Donc pour x³ → 3x², pour 2x → 2.",
     "output": "**Solution:**\nf'(x) = 3x² + 2"
   }
   ```
@@ -123,7 +133,7 @@ After the MVP pipeline is validated:
 * For Arabic-language subjects, evaluate `Jais-13B` (Arabic-native LLM) as an alternative to Qwen.
 
 ### **C. Ready-to-Use Base Models**
-The model selected (`Qwen2.5` family) already has strong pre-trained knowledge of:
+The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the text-generation model for Kaggle-friendly LoRA fine-tuning; PDF/photo exercise uploads are handled by the extraction/OCR layer first, then the extracted text is sent to RAG + the fine-tuned LLM. The `Qwen2.5` family already has strong pre-trained knowledge of:
 * French and English (primary MVP languages)
 * General mathematics, physics, and scientific reasoning
 * Instruction-following (step-by-step answers, formatting rules)
@@ -177,19 +187,21 @@ The model selected (`Qwen2.5` family) already has strong pre-trained knowledge o
 ### **Phase 3 — Model Fine-Tuning**
 > **Objective:** Teach a small LLM the style and format of Moroccan curriculum Q&A.
 
-**Tools:** `Unsloth`, `LoRA`, `Qwen2.5-1.5B-Instruct`, Kaggle (free T4 GPU)
+**Tools:** `Unsloth`, `LoRA`, `Qwen/Qwen2.5-1.5B-Instruct`, Kaggle (free T4 GPU)
 
-**MVP Test:** Fine-tune on a small sample (~50–200 Q-A-Reasoning triplets) just to confirm training runs and the model output style changes.
+**MVP Test:** Fine-tune on 277 training-ready Q-A-Reasoning triplets extracted from all 8 documents (cours, exercices, cadre référenciel) across all 3 subjects.
 
 **Actions:**
-1. Load `Qwen2.5-1.5B-Instruct` in 4-bit quantization using Unsloth (fits comfortably on T4).
-2. Attach LoRA adapters (low memory overhead, trains only the adapter layers).
-3. Load the small Q-A-Reasoning dataset from HuggingFace.
-4. Run a short training loop (1–3 epochs, just to observe results).
-5. Compare model output before vs. after fine-tuning on a few test questions.
-6. Push the fine-tuned LoRA weights to a **private HuggingFace Model** repository.
+1. **Build Q&A dataset:** Python script reads all `chunks.json` files, conservatively pairs reliable corrected exercises with solutions, converts definitions/theorems into Q&A, extracts learning objectives from the cadre référenciel, and saves local `messages` + ChatML `text` fields. Pushes to `Saad-Elouakate/rafiki-qna-triplets`.
+2. Load `Qwen/Qwen2.5-1.5B-Instruct` in 4-bit quantization using Unsloth (fits comfortably on T4).
+3. Attach LoRA adapters (rank=16, low memory overhead, trains only the adapter layers).
+4. Load the Q-A-Reasoning dataset from HuggingFace.
+5. Format into Qwen2.5 chat template with `(system + user + assistant)` structure including `thinking` chain.
+6. Run a short training loop (1–3 epochs, just to observe results).
+7. Compare model output before vs. after fine-tuning on a few test questions.
+8. Push the fine-tuned LoRA weights to a **private HuggingFace Model** repository (`Saad-Elouakate/rafiki-qwen`).
 
-**Success Condition:** Fine-tuned model answers in the correct Moroccan curriculum style (step-by-step, proper French/MSA formatting). ✅
+**Success Condition:** Fine-tuned model answers in the correct Moroccan curriculum style (step-by-step, proper French/English formatting, with LaTeX math). ✅
 
 ---
 
@@ -275,20 +287,18 @@ The model selected (`Qwen2.5` family) already has strong pre-trained knowledge o
 
 ## **6. Project Status**
 
-### **Current Phase:** Phase 2 — RAG Knowledge Base
+### **Current Phase:** Phase 3 — Model Fine-Tuning
 
 ### **Completed:**
-* MVP scope finalised: **2ème Bac only**, subjects: **Mathématiques · Physique-Chimie · English**.
-* Architecture upgraded: **3-server split** — Vercel (Next.js) + Railway (FastAPI) + HuggingFace (model + data).
-* Deployment strategy confirmed: no Gradio, full professional stack with a landing page.
-* Phase 1 complete: 965 structured chunks pushed to `Saad-Elouakate/AI-Adaptive-Learning` on HuggingFace.
-* `src/phase1_extraction/` module written (6 files, CPU fallback mode, batch folder support).
-* `src/phase2_rag/` module created (embedder, retriever, config, main).
-* GitHub repository initialized.
-
-### **Resolved Blockers:**
-* Original script used `Qwen2.5-VL-7B-Instruct` in bfloat16 → **OOM on T4** (14.5 GB VRAM).
-* **Fix:** Using `Qwen2.5-VL-2B-Instruct` → ~4 GB VRAM, ~12 GB headroom. ✅
+* ✅ **Phase 1:** All 8 documents extracted → Markdown chunks pushed to `Saad-Elouakate/AI-Adaptive-Learning` on HuggingFace.
+* ✅ **Phase 2:** ChromaDB vector index built and pushed to `Saad-Elouakate/AI-Adaptive-Learning-Index`.
+* ✅ **Phase 1 code:** `src/phase1_extraction/` module (6 files, VLM + CPU fallback, batch folder support).
+* ✅ **Phase 2 code:** `src/phase2_rag/` module (embedder, retriever, config, main).
+* ✅ **Data:** 8 processed documents in `output/phase1-extracted/`:
+  * Maths: cours + exercices corrigés + cadre référenciel
+  * Physics: cours/exercices + cadre référenciel
+  * English: cours + examen + cadre référenciel
+* ✅ **GitHub repository** initialized.
 
 ### **Next Action:**
-Run `src/phase2_rag/main.py` on Kaggle to embed the 965 chunks into ChromaDB and push the index to `Saad-Elouakate/AI-Adaptive-Learning-Index` on HuggingFace.
+Push the regenerated 277-row Q-A-Reasoning triplet dataset to HuggingFace → fine-tune `Qwen/Qwen2.5-1.5B-Instruct` on Kaggle.

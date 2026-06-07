@@ -75,9 +75,9 @@ Load pre-built ChromaDB  ← built from YOUR 2Bac PDFs (Maths · Physics · Engl
                │  vector store ← used at every query (permanent)
                ▼
 ┌─────────────────────────────────┐
-│  Phase 3 — Fine-tuned LLM       │  Qwen2.5-1.5B + LoRA (Kaggle T4)
+│  Phase 3 — Fine-tuned LLM       │  Qwen/Qwen2.5-1.5B-Instruct + LoRA (Kaggle T4)
 │  Teaches style, not content     │  Unsloth 4-bit quant
-│  Fine-tuning data = Q&A pairs   │  ~50-200 triplets (Maths/Physics)
+│  Fine-tuning data = Q&A pairs   │  277 training-ready triplets (Maths/Physics/English)
 │  (pushed to HuggingFace Model)  │
 └──────────────┬──────────────────┘
                │  HF Serverless Inference API
@@ -169,8 +169,8 @@ frontend/                        Phase 5 — Next.js app (Vercel) 🆕 New
 | Phase | Objective | Tools | Status |
 |---|---|---|---|
 | **1 — PDF Extraction** | 2Bac PDFs → Markdown chunks | Qwen2.5-VL-2B, PyMuPDF, Kaggle T4 | ✅ Complete |
-| **2 — RAG Knowledge Base** | Embed all chunks → persistent ChromaDB | multilingual-MiniLM-L12-v2, ChromaDB | 🟡 In Progress |
-| **3 — Fine-Tuning** | Train Qwen on 2Bac Q&A style (French/English) | Qwen2.5-1.5B, LoRA, Unsloth, Kaggle T4 | ⬜ Not started |
+| **2 — RAG Knowledge Base** | Embed all chunks → persistent ChromaDB | multilingual-MiniLM-L12-v2, ChromaDB | ✅ Complete |
+| **3 — Fine-Tuning** | Train Qwen on 2Bac Q&A style (French/English) | Qwen/Qwen2.5-1.5B-Instruct, LoRA, Unsloth, Kaggle T4 | 🟡 In Progress |
 | **4 — FastAPI Backend** | Wrap RAG + LLM into a REST API | FastAPI, Uvicorn, Railway | ⬜ Not started |
 | **5 — Next.js Frontend** | Landing page + student app UI | Next.js, Vercel, CSS from design template | ⬜ Not started |
 | **6 — Integration** | Wire all 3 servers, end-to-end test | All of the above | ⬜ Not started |
@@ -179,7 +179,7 @@ frontend/                        Phase 5 — Next.js app (Vercel) 🆕 New
 
 ## Current Status
 
-**Active phase:** Phase 2 — RAG Knowledge Base
+**Active phase:** Phase 3 — Model Fine-Tuning
 
 ### ✅ Completed
 - **Architecture upgraded:** 3-server split confirmed — Vercel (Next.js) + Railway (FastAPI) + HuggingFace (model + data).
@@ -189,9 +189,10 @@ frontend/                        Phase 5 — Next.js app (Vercel) 🆕 New
   - `embedder.py` — logic to download chunks from HF and embed into ChromaDB
   - `retriever.py` — RAGRetriever wrapper for the FastAPI backend
   - `main.py` — Kaggle script to orchestrate indexing and pushing
+- **Phase 3 dataset:** Selected `Qwen/Qwen2.5-1.5B-Instruct` and generated 277 training-ready triplets in `output/phase3/` with raw fields, `messages`, and ChatML `text`.
 
 ### ⏳ Next Action
-Run `src/phase2_rag/main.py` on Kaggle to process the 965 chunks, build the ChromaDB vector index, and push it to the new `Saad-Elouakate/AI-Adaptive-Learning-Index` dataset on HuggingFace.
+Push `output/phase3/triplets.jsonl` to `Saad-Elouakate/rafiki-qna-triplets`, then fine-tune `Qwen/Qwen2.5-1.5B-Instruct` with LoRA on Kaggle.
 
 ---
 
@@ -204,6 +205,12 @@ Run `src/phase2_rag/main.py` on Kaggle to process the 965 chunks, build the Chro
               - Frontend styling will follow a Figma/Stitch design template
               - Streaming responses deferred (full answer at once for MVP)
               - Private school / educator tier removed from this project
+
+[2026-06-06]  Phase 3 model and dataset selected
+              - Selected Qwen/Qwen2.5-1.5B-Instruct for text LoRA fine-tuning
+              - Kept PDF/photo exercise support as a separate extraction/OCR step before RAG + LLM
+              - Regenerated output/phase3 with 277 training-ready triplets
+              - Local dataset now includes messages and ChatML text columns
 
 [2026-06-03]  MVP scope finalised via questionnaire
               - Target year: 2ème Bac only
