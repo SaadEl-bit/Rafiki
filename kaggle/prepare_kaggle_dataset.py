@@ -1,5 +1,5 @@
 """
-M3allem - Kaggle Dataset Preparation Script
+Rafiki - Kaggle Dataset Preparation Script
 =============================================
 Packages the PDF + pipeline script into a zip file
 ready for upload to Kaggle as a Dataset.
@@ -17,7 +17,7 @@ import datetime
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 KAGGLE_DIR = PROJECT_ROOT / "kaggle"
 DATA_DIR = PROJECT_ROOT / "Document-Data-Set"
-OUTPUT_ZIP = KAGGLE_DIR / "m3allem_kaggle_dataset.zip"
+OUTPUT_ZIP = KAGGLE_DIR / "rafiki_kaggle_dataset.zip"
 
 def prepare():
     files_to_package = []

@@ -1,6 +1,6 @@
 """
 ================================================================================
-  M3allem - Moroccan Adaptive AI Tutor Platform
+  Rafiki - Moroccan Adaptive AI Tutor Platform
   Phase 1: PDF to Structured Markdown Pipeline (Kaggle)
 ================================================================================
   Description: Parses Moroccan curriculum PDFs using Qwen2.5-VL-2B,
@@ -211,7 +211,7 @@ class VisionLanguageProcessor:
     def build_extraction_prompt(self, page_num: int, total_pages: int, raw_text_hint: str = "") -> str:
         """Build the prompt for extracting structured content from a PDF page image."""
 
-        prompt = f"""You are an AI assistant for the M3allem project, extracting Moroccan curriculum content from PDF pages.
+        prompt = f"""You are an AI assistant for the Rafiki project, extracting Moroccan curriculum content from PDF pages.
 
 Page {page_num + 1} of {total_pages}
 
@@ -458,7 +458,7 @@ class ContentStructuring:
 # CELL 6: Main Pipeline
 # ==============================================================================
 
-class M3allemPDFPipeline:
+class RafikiPDFPipeline:
     """End-to-end pipeline: PDF -> Qwen2.5-VL -> Structured Markdown -> Dataset."""
 
     def __init__(self, config: PipelineConfig):
@@ -471,7 +471,7 @@ class M3allemPDFPipeline:
         """Execute the full pipeline."""
         start_time = time.time()
         logger.info("=" * 60)
-        logger.info("M3allem PDF -> Markdown Pipeline Started")
+        logger.info("Rafiki PDF -> Markdown Pipeline Started")
         logger.info("=" * 60)
 
         # Step 1: Open PDF
@@ -644,7 +644,7 @@ class M3allemPDFPipeline:
 # ==============================================================================
 
 if __name__ == "__main__":
-    pipeline = M3allemPDFPipeline(config)
+    pipeline = RafikiPDFPipeline(config)
     results = pipeline.run()
 
     print(f"\n✅ Pipeline finished!")

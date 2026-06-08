@@ -1,4 +1,4 @@
-# M3allem — Phase 1 Dependencies
+# Rafiki — Phase 1 Dependencies
 # ================================
 # Install with:  pip install -r src/requirements-phase1.txt
 

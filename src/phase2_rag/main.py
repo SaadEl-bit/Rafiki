@@ -221,7 +221,7 @@ def main() -> None:
         config.hf_index_repo = args.index_repo
 
     logger.info("=" * 60)
-    logger.info("M3allem — Phase 2: RAG Knowledge Base Builder")
+    logger.info("Rafiki — Phase 2: RAG Knowledge Base Builder")
     logger.info("=" * 60)
     logger.info("Source dataset : %s", config.hf_source_dataset)
     logger.info("ChromaDB dir   : %s", config.chromadb_dir)

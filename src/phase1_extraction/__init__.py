@@ -6,6 +6,6 @@ with LaTeX math notation, ready for Phase 2 RAG indexing.
 """
 
 from .config import PipelineConfig, BacLevel, Subject
-from .pipeline import M3allemPDFPipeline
+from .pipeline import RafikiPDFPipeline
 
-__all__ = ["PipelineConfig", "BacLevel", "Subject", "M3allemPDFPipeline"]
+__all__ = ["PipelineConfig", "BacLevel", "Subject", "RafikiPDFPipeline"]

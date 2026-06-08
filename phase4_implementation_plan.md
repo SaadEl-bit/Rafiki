@@ -1,6 +1,6 @@
 # Phase 4 & 5: Backend & Frontend Deployment
 
-The model fine-tuning is officially complete, and the model `Saad-Elouakate/rafiki-qwen-2.5-finetune` is now hosted on Hugging Face. We will now move forward to Phase 4 (FastAPI Backend) and Phase 5 (Next.js Frontend) to deploy the actual M3allem application.
+The model fine-tuning is officially complete, and the model `Saad-Elouakate/rafiki-qwen-2.5-finetune` is now hosted on Hugging Face. We will now move forward to Phase 4 (FastAPI Backend) and Phase 5 (Next.js Frontend) to deploy the actual Rafiki application.
 
 ## Goal
 

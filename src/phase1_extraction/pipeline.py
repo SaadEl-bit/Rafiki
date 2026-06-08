@@ -29,18 +29,18 @@ from .structurer import build_page_entry
 logger = logging.getLogger(__name__)
 
 
-class M3allemPDFPipeline:
+class RafikiPDFPipeline:
     """
     End-to-end Phase 1 pipeline.
 
     Single PDF
     ----------
-    pipeline = M3allemPDFPipeline(config)
+    pipeline = RafikiPDFPipeline(config)
     pipeline.run_file("data/raw_pdfs/Maths_2Bac_Probabilites.pdf")
 
     All PDFs in a folder
     --------------------
-    pipeline = M3allemPDFPipeline(config)
+    pipeline = RafikiPDFPipeline(config)
     pipeline.run_folder("data/raw_pdfs/")
     """
 

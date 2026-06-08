@@ -1,0 +1,7 @@
+- [x] 1. Bind Modern Minimal palette to :root
+- [x] 2. Map 13 slides from presentation-prompt.md to layout templates
+- [x] 3. Implement slide-to-fit framework with fixed 1920x1080 canvas
+- [x] 4. Author slide content with precise Moroccan educational context
+- [x] 5. Add UI mockups for Architecture and RAG flows
+- [x] 6. Self-check against 'professional and simple' constraint
+- [x] 7. Emit final presentation artifact

@@ -1,5 +1,8 @@
 import os
 import logging
+from dotenv import load_dotenv
+load_dotenv()  # This explicitly loads the .env file
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.phase4_backend.routers import ask, correct

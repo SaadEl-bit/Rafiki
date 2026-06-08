@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const exportsDir = 'h:/Study/Projects/M3allem/Github/Frontend Design/stitch_exports';
-const appDir = 'h:/Study/Projects/M3allem/Github/M3allem/frontend/app';
+const appDir = 'h:/Study/Projects/M3allem/Github/Rafiki/frontend/app';
 
 function htmlToJsx(html) {
     let jsx = html.replace(/class=/g, 'className=');

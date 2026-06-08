@@ -62,7 +62,7 @@ class VLMExtractor(BaseExtractor):
     """
 
     EXTRACTION_PROMPT = """\
-You are an AI assistant for the M3allem project, extracting Moroccan Bac curriculum content from PDF pages.
+You are an AI assistant for the Rafiki project, extracting Moroccan Bac curriculum content from PDF pages.
 
 Page {page} of {total}
 

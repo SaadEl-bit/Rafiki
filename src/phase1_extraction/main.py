@@ -7,7 +7,7 @@ LOCAL (no GPU):
 
 KAGGLE (GPU, full pipeline):
     python -m src.phase1_extraction.main \\
-        --input /kaggle/input/m3allem-2bac-pdfs/ \\
+        --input /kaggle/input/rafiki-2bac-pdfs/ \\
         --output /kaggle/working/extracted \\
         --push-to-hub
 
@@ -25,12 +25,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.phase1_extraction.config import PipelineConfig
-from src.phase1_extraction.pipeline import M3allemPDFPipeline
+from src.phase1_extraction.pipeline import RafikiPDFPipeline
 
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="M3allem — Phase 1: PDF → Structured Markdown",
+        description="Rafiki — Phase 1: PDF → Structured Markdown",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -39,7 +39,7 @@ Examples:
 
   # Process the whole 2bac folder on Kaggle with VLM + push results
   python -m src.phase1_extraction.main \\
-      --input /kaggle/input/m3allem-2bac-pdfs/ \\
+      --input /kaggle/input/rafiki-2bac-pdfs/ \\
       --output /kaggle/working/extracted \\
       --push-to-hub
         """,
@@ -179,7 +179,7 @@ def main() -> None:
     if args.level:
         config.default_level = args.level
 
-    pipeline   = M3allemPDFPipeline(config)
+    pipeline   = RafikiPDFPipeline(config)
     input_path = Path(args.input)
 
     if input_path.is_dir():

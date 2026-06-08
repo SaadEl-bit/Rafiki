@@ -1,7 +1,7 @@
 import os
 import re
 
-app_dir = 'h:/Study/Projects/M3allem/Github/M3allem/frontend/app'
+app_dir = 'h:/Study/Projects/M3allem/Github/Rafiki/frontend/app'
 
 def fix_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:

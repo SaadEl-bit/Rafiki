@@ -11,7 +11,7 @@ from huggingface_hub import InferenceClient
 logger = logging.getLogger(__name__)
 
 HF_TOKEN = os.getenv("HF_TOKEN")
-VL_MODEL_ID = os.getenv("VL_MODEL_ID", "Qwen/Qwen2.5-VL-7B-Instruct")
+VL_MODEL_ID = os.getenv("VL_MODEL_ID", "meta-llama/Llama-3.2-11B-Vision-Instruct")
 
 client = InferenceClient(token=HF_TOKEN)
 
@@ -71,7 +71,7 @@ def extract_text_via_vl(base64_images: List[str]) -> str:
                     },
                     {
                         "type": "text", 
-                        "text": "Extract all text, math formulas, and descriptions of diagrams from this image. Format the output neatly in Markdown, using LaTeX for math."
+                        "text": "Extract ONLY the raw text and mathematical formulas from this image. Do NOT describe the image, do NOT mention page numbers, do NOT use markdown headings. Output only the content text. Use LaTeX $$...$$ for math. No explanations or descriptions."
                     }
                 ]
             }
@@ -84,7 +84,6 @@ def extract_text_via_vl(base64_images: List[str]) -> str:
                 max_tokens=2000,
                 temperature=0.1
             )
-            extracted_text += f"\n\n--- Page {idx+1} ---\n\n"
             extracted_text += response.choices[0].message.content
         except Exception as e:
             logger.error(f"Error calling Vision API for image {idx+1}: {e}")

@@ -161,7 +161,7 @@ def _extract_title(text: str) -> str:
 
 def _is_heading_only(text: str) -> bool:
     plain = re.sub(r"^#+\s*", "", text.strip())
-    if len(plain) <= 25 and re.search(r"\b(exercice|solutions?|correction|m3allem)\b", plain, re.I):
+    if len(plain) <= 25 and re.search(r"\b(exercice|solutions?|correction|rafiki)\b", plain, re.I):
         return True
     return bool(len(plain) <= 18 and "\n" not in text)
 
