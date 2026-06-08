@@ -1,0 +1,41 @@
+# ==========================================
+# M3allem - Complete Requirements (Phases 1-4)
+# ==========================================
+# Run this to install dependencies for the entire pipeline:
+# pip install -r requirements_all.txt
+
+# --- Core API & Backend (Phase 4) ---
+fastapi
+uvicorn
+pydantic
+python-multipart
+
+# --- PDF & Image Processing (Phase 1 & 4) ---
+PyMuPDF>=1.23.0       # fitz — PDF parsing
+Pillow>=10.0.0        # Image processing
+
+# --- RAG & Embeddings (Phase 2 & 4) ---
+chromadb
+sentence-transformers
+
+# --- HuggingFace Utilities ---
+datasets>=2.19.0
+huggingface-hub>=0.23.0
+
+# --- Vision-Language Model (Phase 1 Local Extraction) ---
+# Note: For the MVP backend (Phase 4), Qwen-VL is called via Serverless API,
+# so these are only strictly needed if you run Phase 1 locally.
+transformers>=4.49.0
+qwen-vl-utils>=0.0.10
+accelerate>=0.30.0
+sentencepiece>=0.1.99
+einops>=0.7.0
+
+# --- Fine-Tuning (Phase 3) ---
+# Unsloth is best installed via their official commands to match your CUDA version.
+# See: https://github.com/unslothai/unsloth
+# If you are strictly running inference/backend, you do NOT need Unsloth.
+trl
+peft
+bitsandbytes
+wandb

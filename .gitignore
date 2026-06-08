@@ -1,0 +1,59 @@
+# ==============================
+# M3allem .gitignore
+# ==============================
+
+# ------------------------------
+# Secrets & Environment Variables
+# ------------------------------
+.env
+.env.*
+!.env.example
+
+# Specific scripts containing hardcoded keys
+src/phase3/dataset/push_data.py
+
+# ------------------------------
+# Python
+# ------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ------------------------------
+# Environments
+# ------------------------------
+.env/
+.venv/
+env/
+venv/
+ENV/
+
+# ------------------------------
+# Project Specific & Data Caches
+# ------------------------------
+chroma_db_cache/
+output/
+__MACOSX/
+.DS_Store
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# ------------------------------
+# Frontend (Next.js & Node)
+# ------------------------------
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.pnp.*
+frontend/.yarn/cache
+frontend/.yarn/unplugged
+frontend/.yarn/build-state.yml
+frontend/.yarn/install-state.gz

@@ -15,6 +15,9 @@ Rafiki — رفيقي — is an Adaptive AI tutor designed specifically for Moro
   * ✅ **Exercise Correction** — Student uploads a blank exercise or one with their own answers; AI corrects it like a professor with full step-by-step solution
   * 🔶 **Exercise Generation** — UI placeholder in MVP; connected to AI post-MVP
   * 🔶 **Resume Generation** — UI placeholder in MVP; connected to AI post-MVP
+* **Data Persistence & Memory (post-MVP):** 
+  * The MVP uses strict session-based temporary memory. 
+  * Post-MVP, we will integrate a free external database like Supabase (PostgreSQL) to store student accounts, chat histories, and uploaded document RAG indexes persistently.
 * **RAG is permanent:** Fine-tuning teaches the model *how* to answer (style, format, step-by-step reasoning). RAG provides *what* to answer about (specific theorems, formulas, examples). Both are always used together at inference time.
 
 
@@ -33,18 +36,21 @@ STUDENT'S BROWSER
         ▼
 ┌─────────────────────────────────────────────┐
 │  VERCEL — Frontend                          │
-│  Next.js 14+ · JavaScript                  │
+│  Next.js 16 · JavaScript · Tailwind CSS     │
 │  / → Landing page (what is Rafiki, features)│
-│  /app/chat → Q&A Chat                      │
-│  /app/correction → Exercise Correction     │
-│  /app/exercise → Generate Exercise (later) │
-│  /app/resume → Generate Resume (later)     │
+│  /chat → Q&A Chat                           │
+│  /correction → Exercise Correction           │
+│  /exercise → Generate Exercise (later)       │
+│  /resume → Generate Resume (later)           │
+│  /exam-gen → Exam Generation (later)         │
+│  /exam-correction → Exam Correction (later)  │
+│  /cadre → Cadre Référenciel                 │
 └─────────────────┬───────────────────────────┘
                   │  POST /api/ask
                   │  POST /api/correct
                   ▼
 ┌─────────────────────────────────────────────┐
-│  RAILWAY — Backend                          │
+│  RAILWAY — Backend                      ✅  │
 │  Python 3.11 · FastAPI · Uvicorn            │
 │  RAGRetriever (Phase 2, reused as-is)       │
 │  HuggingFace Inference API client           │
@@ -148,7 +154,7 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 
 **Tools:** `Qwen2.5-VL-2B-Instruct`, Kaggle (free T4 GPU), HuggingFace Datasets
 
-**MVP Target:** Process all 5 PDFs in `Document-Data-Set/2bac/` (Maths · Physics · English).
+**MVP Target:** Process all 8 PDFs/documents in `Document-Data-Set/2bac/` (Maths · Physics · English).
 
 **Actions:**
 1. Pipeline uses `Qwen2.5-VL-2B-Instruct` to stay well within T4 VRAM limits (~4 GB model, ~12 GB headroom for images).
@@ -157,7 +163,7 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 4. Save output as structured Markdown with LaTeX math preserved.
 5. Push extracted chunks to a **private HuggingFace Dataset** repository.
 
-**Success Condition:** All 5 PDFs → clean Markdown + `chunks.json` per subject, pushed to HuggingFace. ✅
+**Success Condition:** All 8 PDFs/documents → clean Markdown + `chunks.json` per subject, pushed to HuggingFace. ✅
 
 ---
 
@@ -168,7 +174,7 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 * **Embeddings:** The `sentence-transformers` model converts extracted text into a list of numbers (a vector) where similar meanings have similar numbers.
 * **ChromaDB:** A specialized Vector Database that stores these vectors and quickly searches for the closest match to a student's question.
 
-**Tools:** `ChromaDB`, `sentence-transformers/all-MiniLM-L6-v2`, CPU (Kaggle)
+**Tools:** `ChromaDB`, `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, CPU (Kaggle)
 
 **MVP Target:** Index all chunks from the Phase 1 HuggingFace dataset into a single persistent ChromaDB.
 
@@ -177,7 +183,7 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 2. Use the multilingual embedding model to convert each chunk's `content_string` to a vector.
 3. Store all vectors + original text + metadata (subject, level, chapter) in a local ChromaDB folder.
 4. Write and test a retrieval function: given a student query, return the top-5 most relevant chunks.
-5. Save the ChromaDB collection to disk — this is the **pre-built KB that ships with the Gradio app**.
+5. Save the ChromaDB collection to disk — this is the **pre-built KB that ships with the FastAPI backend**.
 6. Upload the ChromaDB artifact to a **new HuggingFace dataset** (e.g., `Saad-Elouakate/AI-Adaptive-Learning-Index`).
 
 **Success Condition:** Query `"How to find the derivative of a polynomial?"` or `"Loi de Newton?"` → returns the correct lesson chunks from the right subject. 
@@ -214,11 +220,11 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 
 **Actions:**
 1. Create `src/phase4_backend/` with FastAPI app structure (routers, services, models).
-2. Wrap `RAGRetriever` (Phase 2) into a `rag_service.py` — no code changes to Phase 2.
-3. Create `llm_service.py` — calls the HuggingFace Inference API with the RAG context + student question.
+2. Wrap `RAGRetriever` (Phase 2) into a `rag_service.py` — auto-downloads ChromaDB from HuggingFace on startup.
+3. Create `llm_service.py` — calls the HuggingFace Inference API via `huggingface_hub.InferenceClient` with the RAG context + student question.
 4. Implement endpoints:
    * `POST /api/ask` — receives question + subject → returns AI answer
-   * `POST /api/correct` — receives uploaded file + subject → returns step-by-step correction
+   * `POST /api/correct` — receives exercise text + subject → returns step-by-step correction
    * `GET /health` — health check for Railway
 5. Set environment variables on Railway (HF_TOKEN, HF_MODEL_ID, ALLOWED_ORIGINS).
 6. Deploy to Railway via Git push.
@@ -230,19 +236,22 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 ### **Phase 5 — Next.js Frontend**
 > **Objective:** Build the student-facing web interface and deploy to Vercel.
 
-**Tools:** `Next.js 14+`, JavaScript, CSS (from Figma/Stitch design template), Vercel
+**Tools:** `Next.js 16`, `JavaScript`, `Tailwind CSS`, `Vercel`
 
 **MVP Target:** A deployed Vercel app with a landing page and the two working AI features.
 
 **Actions:**
-1. Initialize `frontend/` as a Next.js 14+ project (App Router, JavaScript).
+1. Initialize `frontend/` as a Next.js 16 project (App Router, JavaScript).
 2. Build the landing page (`/`) — hero section, feature overview, CTA button.
-3. Build the student app interface (`/app`) with:
-   * ✅ **Q&A Chat** (`/app/chat`) — text input → calls `POST /api/ask` → displays formatted answer with LaTeX math.
-   * ✅ **Exercise Correction** (`/app/correction`) — drag-and-drop PDF/image upload → calls `POST /api/correct` → displays step-by-step correction.
-   * 🔶 **Generate Exercise** (`/app/exercise`) — UI placeholder, connected to AI post-MVP.
-   * 🔶 **Generate Resume** (`/app/resume`) — UI placeholder, connected to AI post-MVP.
-4. Apply the CSS design from the provided Figma/Stitch template.
+3. Build the student app interface (`(dashboard)/`) with:
+   * ✅ **Q&A Chat** (`/chat`) — text input → calls `POST /api/ask` → displays formatted answer with LaTeX math.
+   * ✅ **Exercise Correction** (`/correction`) — drag-and-drop PDF/image upload → calls `POST /api/correct` → displays step-by-step correction.
+   * 🔶 **Generate Exercise** (`/exercise`) — UI placeholder, connected to AI post-MVP.
+   * 🔶 **Generate Resume** (`/resume`) — UI placeholder, connected to AI post-MVP.
+   * 🔶 **Exam Generation** (`/exam-gen`) — UI placeholder, connected to AI post-MVP.
+   * 🔶 **Exam Correction** (`/exam-correction`) — UI placeholder, connected to AI post-MVP.
+   * 🔶 **Cadre Référenciel** (`/cadre`) — UI showing official 2Bac curriculum info.
+4. Apply Tailwind CSS styling (Material Design-inspired tokens).
 5. Set `NEXT_PUBLIC_API_URL` environment variable on Vercel pointing to the Railway backend.
 6. Deploy to Vercel via Git push.
 
@@ -287,18 +296,27 @@ The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the te
 
 ## **6. Project Status**
 
-### **Current Phase:** Phase 3 — Model Fine-Tuning
+### **Current Phase:** Phase 6 — Integration (wire frontend to backend)
 
 ### **Completed:**
 * ✅ **Phase 1:** All 8 documents extracted → Markdown chunks pushed to `Saad-Elouakate/AI-Adaptive-Learning` on HuggingFace.
 * ✅ **Phase 2:** ChromaDB vector index built and pushed to `Saad-Elouakate/AI-Adaptive-Learning-Index`.
-* ✅ **Phase 1 code:** `src/phase1_extraction/` module (6 files, VLM + CPU fallback, batch folder support).
+* ✅ **Phase 1 code:** `src/phase1_extraction/` module (7 files, VLM + CPU fallback, batch folder support).
 * ✅ **Phase 2 code:** `src/phase2_rag/` module (embedder, retriever, config, main).
+* ✅ **Phase 3 dataset:** 277 training-ready Q-A-Reasoning triplets in `output/phase3/` with raw fields, `messages`, and ChatML `text`.
+* ✅ **Phase 4 code:** `src/phase4_backend/` module (FastAPI app, `/api/ask`, `/api/correct`, `/health`, RAG service, LLM service, Pydantic models).
+* ✅ **Phase 5 code:** `frontend/` Next.js app (8 pages: Landing, Chat, Correction, Exercise, Resume, Exam-Gen, Exam-Correction, Cadre).
 * ✅ **Data:** 8 processed documents in `output/phase1-extracted/`:
   * Maths: cours + exercices corrigés + cadre référenciel
   * Physics: cours/exercices + cadre référenciel
   * English: cours + examen + cadre référenciel
 * ✅ **GitHub repository** initialized.
+* ✅ **Railway deployment** configured via `railway.json`.
 
 ### **Next Action:**
-Push the regenerated 277-row Q-A-Reasoning triplet dataset to HuggingFace → fine-tune `Qwen/Qwen2.5-1.5B-Instruct` on Kaggle.
+Phase 6 — Connect the Next.js frontend to the Railway backend:
+1. Create `frontend/lib/api.js` with API call functions
+2. Wire Chat page to `POST /api/ask`
+3. Wire Correction page to `POST /api/correct`
+4. Set `NEXT_PUBLIC_API_URL` environment variable on Vercel
+5. Deploy and test end-to-end
