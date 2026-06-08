@@ -8,7 +8,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
 """
 generate_triplets.py
 ====================
-Converts any M3allem exam JSON file into fine-tuning triplets for
+Converts any Rafiki exam JSON file into fine-tuning triplets for
 Qwen2.5-1.5B-Instruct LoRA training and appends them to a master JSONL dataset.
 
 Usage
@@ -472,7 +472,7 @@ def strip_meta(jsonl_path: Path) -> None:
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Convert M3allem exam JSON files to fine-tuning triplets (JSONL).",
+        description="Convert Rafiki exam JSON files to fine-tuning triplets (JSONL).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -523,7 +523,7 @@ def main():
     verbose = not args.quiet
 
     print(f"\n{'='*60}")
-    print(f"  M3allem — Triplet Generator")
+    print(f"  Rafiki — Triplet Generator")
     print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*60}")
 

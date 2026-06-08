@@ -1,5 +1,5 @@
 # ==========================================
-# M3allem - Kaggle Requirements
+# Rafiki - Kaggle Requirements
 # ==========================================
 # Run this in Kaggle: !pip install -r src/requirements.txt
 

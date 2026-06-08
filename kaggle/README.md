@@ -1,4 +1,4 @@
-# M3allem - Kaggle PDF Processing Pipeline
+# Rafiki - Kaggle PDF Processing Pipeline
 
 ## Objective
 Parse Moroccan curriculum PDFs using **Qwen2.5-VL-7B-Instruct** (vision-language model) into structured Markdown with LaTeX math, then chunk them into a curriculum dataset.

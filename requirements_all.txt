@@ -1,5 +1,5 @@
 # ==========================================
-# M3allem - Complete Requirements (Phases 1-4)
+# Rafiki - Complete Requirements (Phases 1-4)
 # ==========================================
 # Run this to install dependencies for the entire pipeline:
 # pip install -r requirements_all.txt

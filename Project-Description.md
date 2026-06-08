@@ -9,20 +9,20 @@ Rafiki — رفيقي — is an Adaptive AI tutor designed specifically for Moro
 
 ### **Standard Student Tier (MVP Target)**
 * **Pre-Loaded Knowledge Base:** The app ships with a pre-built ChromaDB built from all 2Bac PDFs — students can ask questions **immediately, without uploading anything**.
-* **Custom Workspace (post-MVP):** Students will also be able to upload their own PDFs, which will be indexed and merged into the knowledge base for that session. *UI is present in MVP but not connected to RAG yet.*
+* **Temporary Session RAG:** Students can upload their own PDFs or images. The backend extracts the text via OCR (Qwen2.5-VL) and temporarily merges it into the knowledge base for that specific chat session.
 * **AI Features (MVP):**
-  * ✅ **Q&A Chat** — Step-by-step answers grounded in the pre-built 2Bac knowledge base (RAG + fine-tuned LLM), in French or English
-  * ✅ **Exercise Correction** — Student uploads a blank exercise or one with their own answers; AI corrects it like a professor with full step-by-step solution
-  * 🔶 **Exercise Generation** — UI placeholder in MVP; connected to AI post-MVP
-  * 🔶 **Resume Generation** — UI placeholder in MVP; connected to AI post-MVP
-* **Data Persistence & Memory (post-MVP):** 
-  * The MVP uses strict session-based temporary memory. 
+  * ✅ **Q&A Chat** — Step-by-step answers grounded in the pre-built 2Bac knowledge base (RAG + fine-tuned LLM), in French or English.
+  * ✅ **Exercise Correction** — Student uploads a blank exercise or one with their own answers; AI corrects it like a professor with full step-by-step solutions.
+  * 🔶 **Cadre Référenciel (الإطار المرجعي)** — UI exists in MVP to display extracted learning objectives.
+  * 🔶 **Exercise Generation** — UI placeholder in MVP; connected to AI post-MVP.
+  * 🔶 **Resume Generation** — UI placeholder in MVP; connected to AI post-MVP.
+  * 🔶 **Exam Generation & Correction** — UI placeholders in MVP; connected to AI post-MVP.
+* **Data Persistence & Memory:** 
+  * The MVP uses strict session-based temporary memory (clears on restart). 
   * Post-MVP, we will integrate a free external database like Supabase (PostgreSQL) to store student accounts, chat histories, and uploaded document RAG indexes persistently.
 * **RAG is permanent:** Fine-tuning teaches the model *how* to answer (style, format, step-by-step reasoning). RAG provides *what* to answer about (specific theorems, formulas, examples). Both are always used together at inference time.
 
-
 ---
-
 
 ## **2. Production Architecture (3-Server Split)**
 
@@ -37,31 +37,29 @@ STUDENT'S BROWSER
 ┌─────────────────────────────────────────────┐
 │  VERCEL — Frontend                          │
 │  Next.js 16 · JavaScript · Tailwind CSS     │
-│  / → Landing page (what is Rafiki, features)│
+│  (UI styled with premium Stitch templates)  │
+│  / → Landing page                           │
 │  /chat → Q&A Chat                           │
-│  /correction → Exercise Correction           │
-│  /exercise → Generate Exercise (later)       │
-│  /resume → Generate Resume (later)           │
-│  /exam-gen → Exam Generation (later)         │
-│  /exam-correction → Exam Correction (later)  │
-│  /cadre → Cadre Référenciel                 │
+│  /correction → Exercise Correction          │
 └─────────────────┬───────────────────────────┘
+                  │  POST /api/upload
                   │  POST /api/ask
                   │  POST /api/correct
                   ▼
 ┌─────────────────────────────────────────────┐
-│  RAILWAY — Backend                      ✅  │
+│  KAGGLE — Backend & AI Layer            ✅  │
 │  Python 3.11 · FastAPI · Uvicorn            │
-│  RAGRetriever (Phase 2, reused as-is)       │
-│  HuggingFace Inference API client           │
+│  Dual T4 GPUs (15GB each) + Localtunnel     │
+│  GPU 0: Text Model (4-bit quant)            │
+│  GPU 1: Vision Model (4-bit quant)          │
 └─────────────────┬───────────────────────────┘
-                  │  HF Serverless Inference API
+                  │  Model Weights
                   ▼
 ┌─────────────────────────────────────────────┐
-│  HUGGINGFACE — AI Layer                     │
-│  Dataset: chunks (Phase 1 output)           │
-│  Dataset: ChromaDB index (Phase 2 output)   │
-│  Model: Qwen/Qwen2.5-1.5B-Instruct LoRA fine-tuned (Phase 3) │
+│  HUGGINGFACE — Model Storage                │
+│  Model (Text): rafiki-qwen-2.5-finetune     │
+│  Model (Vision): Qwen2.5-VL-3B-Instruct     │
+│  Dataset: ChromaDB index                    │
 └─────────────────────────────────────────────┘
 ```
 
@@ -69,254 +67,71 @@ STUDENT'S BROWSER
 
 | Component | Model / Tool | Purpose | Runs On |
 |---|---|---|---|
-| **PDF Parser** | `Qwen2.5-VL-2B-Instruct` | Reads PDF page images, extracts math, diagrams, and text as structured Markdown | Kaggle (free T4 GPU) |
-| **Embedding Model** | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Converts text chunks to vectors for semantic search (supports French + English) | CPU (Kaggle / local) |
-| **Vector Database** | `ChromaDB` | Stores and searches embedded 2Bac course chunks — pre-built KB downloaded at backend startup | On-disk, Railway |
-| **Fine-tuned LLM** | `Qwen/Qwen2.5-1.5B-Instruct` (LoRA fine-tuned) | Generates step-by-step Q&A answers and exercise corrections in Moroccan 2Bac curriculum style after PDF/photo exercises are extracted to text | HuggingFace Serverless Inference API (free) |
-| **Backend API** | `FastAPI` on Railway | Exposes `/api/ask` and `/api/correct` — handles RAG retrieval and LLM calls | Railway (free tier) |
-| **Frontend App** | `Next.js` on Vercel | Student-facing interface: Landing page + Q&A Chat + Exercise Correction + UI placeholders | Vercel (free tier) |
-
-### **How HuggingFace Serverless Inference API Works (Step by Step)**
-
-This is how the fine-tuned model is served to users **without any GPU server cost**:
-
-1. **You fine-tune** the `Qwen/Qwen2.5-1.5B-Instruct` model using LoRA on Kaggle (Phase 3).
-2. **You upload** the fine-tuned model weights to your private HuggingFace model repository.
-3. **HuggingFace hosts** the model on their own servers (free tier, with rate limits).
-4. **Your FastAPI backend** (on Railway) sends a request to the HuggingFace Inference API:
-   ```
-    POST https://api-inference.huggingface.co/models/Saad-Elouakate/rafiki-qwen
-   Headers: { Authorization: "Bearer HF_TOKEN" }
-   Body: { inputs: "[RAG context chunks] + [student question]" }
-   ```
-5. **HuggingFace runs** the model and returns the generated answer.
-6. **FastAPI** returns the answer to the Next.js frontend, which displays it to the student.
-
-> **Free tier limits:** ~1,000 requests/day, cold start possible (model loads in ~20 sec if idle). Sufficient for MVP testing.
+| **Backend API** | `FastAPI` + `Localtunnel` | Orchestrates OCR, RAG, and serves the public URL. | Kaggle Notebook |
+| **Backend OCR** | `Qwen2.5-VL-3B-Instruct` (4-bit) | Live OCR for student-uploaded PDFs/Images. | Kaggle GPU 1 |
+| **Fine-tuned LLM** | `rafiki-qwen-2.5-finetune` (4-bit)| Generates step-by-step Q&A answers and corrections. | Kaggle GPU 0 |
+| **Vector Database** | `ChromaDB` | Stores global 2Bac chunks AND temporary session chunks. | Kaggle Disk |
+| **Frontend App** | `Next.js` | Student-facing interface with modern, premium UI/UX. | Vercel (free tier) |
 
 ---
 
-## **3. Data Strategy**
-
-### **A. MVP Dataset (2Bac — 3 subjects)**
-The MVP is built and validated on **8 processed documents** in `output/phase1-extracted/`:
-
-| File | Subject | Type | Use |
-|---|---|---|---|
-| `Maths-fonctions-cours.pdf` | Mathématiques | Cours | Pre-built KB + Q&A triplets (definitions, theorems) |
-| `Maths-fonctions-corrige-serie-d-exercices.pdf` | Mathématiques | Exercices corrigés | Pre-built KB + Q&A triplets (exercise→solution pairs) |
-| `cadre-de-reference-maths/` | Mathématiques | Cadre référenciel | Q&A triplets (learning objectives) |
-| `Physique-lois-de-newton-cours-Exercices.pdf` | Physique-Chimie | Cours + Exercices | Pre-built KB + Q&A triplets |
-| `cadre-de-reference-physique/` | Physique-Chimie | Cadre référenciel | Q&A triplets (learning objectives) |
-| `English-cours.pdf` | English | Cours | Pre-built KB + Q&A triplets |
-| `English-examen.pdf` | English | Examen | Pre-built KB + Q&A triplets (exam questions) |
-| `cadre-de-reference-english/` | English | Cadre référenciel | Q&A triplets (learning objectives) |
-
-* **Phase 1:** All 8 documents → Markdown chunks via Qwen2.5-VL-2B on Kaggle.
-* **Phase 2:** All chunks → persistent ChromaDB (this becomes the pre-built KB that ships with the app).
-* **Phase 3:** Extract `(question, reasoning_steps, answer)` triplets from ALL document types for fine-tuning style:
-  * **Cours** → convert definitions, theorems, properties, and examples into conceptual Q&A
-  * **Exercices corrigés** → pair each exercise with its step-by-step solution
-  * **Cadre référenciel** → convert learning objectives into competency-based Q&A
-  * **English exam** → convert comprehension points into English Q&A
-  
-  Target: **~150–400 triplets** across all 3 subjects for a robust style shift.
-  
-  ```json
-  {
-    "input": "Déterminer la dérivée de f(x) = x³ + 2x",
-    "thinking": "J'applique la règle de dérivation: (x^n)' = n·x^(n-1). Donc pour x³ → 3x², pour 2x → 2.",
-    "output": "**Solution:**\nf'(x) = 3x² + 2"
-  }
-  ```
-
-### **B. Full Production Dataset (Post-MVP)**
-After the MVP pipeline is validated:
-* Expand to other 2Bac subjects: SVT, Physique-Chimie full programme, Arabic subjects (Arabe, Philosophie, Éducation Islamique).
-* Add Tronc Commun and 1ère Bac levels.
-* Scrape national education portals for all subjects.
-* Scale fine-tuning to the full dataset using a larger model (DeepSeek-R1-14B) on RunPod.
-* For Arabic-language subjects, evaluate `Jais-13B` (Arabic-native LLM) as an alternative to Qwen.
-
-### **C. Ready-to-Use Base Models**
-The selected Phase 3 model is `Qwen/Qwen2.5-1.5B-Instruct`. It is kept as the text-generation model for Kaggle-friendly LoRA fine-tuning; PDF/photo exercise uploads are handled by the extraction/OCR layer first, then the extracted text is sent to RAG + the fine-tuned LLM. The `Qwen2.5` family already has strong pre-trained knowledge of:
-* French and English (primary MVP languages)
-* General mathematics, physics, and scientific reasoning
-* Instruction-following (step-by-step answers, formatting rules)
-* Modern Standard Arabic (MSA) — available for post-MVP Arabic subjects without switching models
-
----
-
-## **4. MVP Build Roadmap**
+## **3. MVP Build Roadmap**
 
 ### **Phase 1 — PDF Extraction Pipeline**
 > **Objective:** Convert raw Moroccan curriculum PDFs → structured Markdown chunks.
-
-**Tools:** `Qwen2.5-VL-2B-Instruct`, Kaggle (free T4 GPU), HuggingFace Datasets
-
-**MVP Target:** Process all 8 PDFs/documents in `Document-Data-Set/2bac/` (Maths · Physics · English).
-
-**Actions:**
-1. Pipeline uses `Qwen2.5-VL-2B-Instruct` to stay well within T4 VRAM limits (~4 GB model, ~12 GB headroom for images).
-2. Render each PDF page as an image (150 DPI).
-3. Feed each page image to the model with the extraction prompt.
-4. Save output as structured Markdown with LaTeX math preserved.
-5. Push extracted chunks to a **private HuggingFace Dataset** repository.
-
 **Success Condition:** All 8 PDFs/documents → clean Markdown + `chunks.json` per subject, pushed to HuggingFace. ✅
 
----
-
 ### **Phase 2 — RAG Knowledge Base**
-> **Objective:** Make the AI able to retrieve the exact relevant lesson when a student asks a question.
-
-**Concepts:**
-* **Embeddings:** The `sentence-transformers` model converts extracted text into a list of numbers (a vector) where similar meanings have similar numbers.
-* **ChromaDB:** A specialized Vector Database that stores these vectors and quickly searches for the closest match to a student's question.
-
-**Tools:** `ChromaDB`, `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, CPU (Kaggle)
-
-**MVP Target:** Index all chunks from the Phase 1 HuggingFace dataset into a single persistent ChromaDB.
-
-**Actions:**
-1. Load all Markdown chunks from the HuggingFace dataset (e.g., `Saad-Elouakate/AI-Adaptive-Learning`).
-2. Use the multilingual embedding model to convert each chunk's `content_string` to a vector.
-3. Store all vectors + original text + metadata (subject, level, chapter) in a local ChromaDB folder.
-4. Write and test a retrieval function: given a student query, return the top-5 most relevant chunks.
-5. Save the ChromaDB collection to disk — this is the **pre-built KB that ships with the FastAPI backend**.
-6. Upload the ChromaDB artifact to a **new HuggingFace dataset** (e.g., `Saad-Elouakate/AI-Adaptive-Learning-Index`).
-
-**Success Condition:** Query `"How to find the derivative of a polynomial?"` or `"Loi de Newton?"` → returns the correct lesson chunks from the right subject. 
-
----
+> **Objective:** Build a semantic index for instant lesson retrieval.
+**Success Condition:** Query `"How to find the derivative of a polynomial?"` returns the correct lesson chunks. ✅
 
 ### **Phase 3 — Model Fine-Tuning**
 > **Objective:** Teach a small LLM the style and format of Moroccan curriculum Q&A.
+**Success Condition:** Fine-tuned model answers in the correct Moroccan curriculum style. ✅
 
-**Tools:** `Unsloth`, `LoRA`, `Qwen/Qwen2.5-1.5B-Instruct`, Kaggle (free T4 GPU)
-
-**MVP Test:** Fine-tune on 277 training-ready Q-A-Reasoning triplets extracted from all 8 documents (cours, exercices, cadre référenciel) across all 3 subjects.
-
+### **Phase 4 & 4.5 — FastAPI Backend + Live OCR**
+> **Objective:** Expose RAG retrieval and LLM inference, and handle live user uploads.
 **Actions:**
-1. **Build Q&A dataset:** Python script reads all `chunks.json` files, conservatively pairs reliable corrected exercises with solutions, converts definitions/theorems into Q&A, extracts learning objectives from the cadre référenciel, and saves local `messages` + ChatML `text` fields. Pushes to `Saad-Elouakate/rafiki-qna-triplets`.
-2. Load `Qwen/Qwen2.5-1.5B-Instruct` in 4-bit quantization using Unsloth (fits comfortably on T4).
-3. Attach LoRA adapters (rank=16, low memory overhead, trains only the adapter layers).
-4. Load the Q-A-Reasoning dataset from HuggingFace.
-5. Format into Qwen2.5 chat template with `(system + user + assistant)` structure including `thinking` chain.
-6. Run a short training loop (1–3 epochs, just to observe results).
-7. Compare model output before vs. after fine-tuning on a few test questions.
-8. Push the fine-tuned LoRA weights to a **private HuggingFace Model** repository (`Saad-Elouakate/rafiki-qwen`).
-
-**Success Condition:** Fine-tuned model answers in the correct Moroccan curriculum style (step-by-step, proper French/English formatting, with LaTeX math). ✅
-
----
-
-### **Phase 4 — FastAPI Backend**
-> **Objective:** Expose RAG retrieval and LLM inference as a REST API that the frontend can call.
-
-**Tools:** `FastAPI`, `Uvicorn`, `Pydantic`, Railway (free tier)
-
-**MVP Target:** A deployed Railway API with two working endpoints: `/api/ask` and `/api/correct`.
-
-**Actions:**
-1. Create `src/phase4_backend/` with FastAPI app structure (routers, services, models).
-2. Wrap `RAGRetriever` (Phase 2) into a `rag_service.py` — auto-downloads ChromaDB from HuggingFace on startup.
-3. Create `llm_service.py` — calls the HuggingFace Inference API via `huggingface_hub.InferenceClient` with the RAG context + student question.
-4. Implement endpoints:
-   * `POST /api/ask` — receives question + subject → returns AI answer
-   * `POST /api/correct` — receives exercise text + subject → returns step-by-step correction
-   * `GET /health` — health check for Railway
-5. Set environment variables on Railway (HF_TOKEN, HF_MODEL_ID, ALLOWED_ORIGINS).
-6. Deploy to Railway via Git push.
-
-**Success Condition:** `POST /api/ask` with a 2Bac Maths question returns a correct, formatted answer. ✅
-
----
+1. Implemented `/api/ask` and `/api/correct` utilizing HuggingFace Inference API.
+2. Added `/api/upload` endpoint using `PyMuPDF` and `Qwen2.5-VL` Serverless API for OCR.
+3. Added Ephemeral In-Memory ChromaDB for temporary session RAG.
+**Success Condition:** Uploading a PDF returns extracted text, and asking a question retrieves context from it. ✅
 
 ### **Phase 5 — Next.js Frontend**
 > **Objective:** Build the student-facing web interface and deploy to Vercel.
-
-**Tools:** `Next.js 16`, `JavaScript`, `Tailwind CSS`, `Vercel`
-
-**MVP Target:** A deployed Vercel app with a landing page and the two working AI features.
-
-**Actions:**
-1. Initialize `frontend/` as a Next.js 16 project (App Router, JavaScript).
-2. Build the landing page (`/`) — hero section, feature overview, CTA button.
-3. Build the student app interface (`(dashboard)/`) with:
-   * ✅ **Q&A Chat** (`/chat`) — text input → calls `POST /api/ask` → displays formatted answer with LaTeX math.
-   * ✅ **Exercise Correction** (`/correction`) — drag-and-drop PDF/image upload → calls `POST /api/correct` → displays step-by-step correction.
-   * 🔶 **Generate Exercise** (`/exercise`) — UI placeholder, connected to AI post-MVP.
-   * 🔶 **Generate Resume** (`/resume`) — UI placeholder, connected to AI post-MVP.
-   * 🔶 **Exam Generation** (`/exam-gen`) — UI placeholder, connected to AI post-MVP.
-   * 🔶 **Exam Correction** (`/exam-correction`) — UI placeholder, connected to AI post-MVP.
-   * 🔶 **Cadre Référenciel** (`/cadre`) — UI showing official 2Bac curriculum info.
-4. Apply Tailwind CSS styling (Material Design-inspired tokens).
-5. Set `NEXT_PUBLIC_API_URL` environment variable on Vercel pointing to the Railway backend.
-6. Deploy to Vercel via Git push.
-
-**Success Condition:** Student opens the Vercel URL, navigates to Chat, asks a 2Bac question, gets a formatted answer from the Railway backend. ✅
-
----
+**Success Condition:** Student interface fully styled using premium templates (Stitch) and navigation fixed. ✅
 
 ### **Phase 6 — Full Integration & End-to-End Test**
-> **Objective:** Validate the complete 3-server pipeline works together with real 2Bac data.
-
-**Tools:** All components from Phases 1–5.
-
-**Actions:**
-1. Test the complete user flow:
-   - Open the Vercel URL (no upload needed)
-   - Ask: *"Explique-moi comment dériver f(x) = x³ + 2x"*
-   - Upload an exercise PDF → get professor-style correction
-   - Verify answers are grounded in the pre-built 2Bac knowledge base
-2. Fix any CORS issues, prompt formatting, retrieval quality, or API latency issues.
-3. Verify Railway cold-start time is acceptable; add a loading indicator in the frontend.
-
-**Success Condition:** Full end-to-end demo working: student opens Vercel app, asks a 2Bac question, gets a correct answer served via Railway + HuggingFace. ✅
+> **Objective:** Validate the complete 3-server pipeline works together.
+**Success Condition:** End-to-end testing successful with frontend talking to the deployed backend. ⬜ Not started
 
 ---
 
-## **5. Free-Tier Resource Map**
+## **4. Status Log**
 
-| Task | Platform | Cost |
-|---|---|---|
-| PDF extraction (Phase 1) | Kaggle (T4 GPU, 30 hrs/week) | Free |
-| RAG index building (Phase 2) | Kaggle or local laptop (CPU) | Free |
-| Model fine-tuning (Phase 3) | Kaggle (T4 GPU) | Free |
-| Dataset & model hosting | HuggingFace (free account) | Free |
-| LLM inference (Phase 4 backend calls) | HuggingFace Serverless Inference API | Free (rate-limited) |
-| Backend API hosting (Phase 4) | Railway (free $5/month credit) | ~Free for MVP |
-| Frontend hosting (Phase 5) | Vercel (free tier) | Free |
-| **TOTAL MVP COST** | | **~$0** |
+[2026-06-08]  Phase 4.5 (Backend OCR & Session RAG) Completed
+              - Shifted backend deployment to Kaggle Notebooks utilizing Dual T4 GPUs.
+              - Implemented 4-bit Quantization for both Text and Vision models to prevent OOM.
+              - Exposed FastAPI to the frontend using Localtunnel.
+              - extraction_service.py now runs Qwen2.5-VL-3B locally on GPU 1.
+              - llm_service.py now runs the fine-tuned text model locally on GPU 0.
 
-> **Post-MVP (Production):** Migrate fine-tuning to RunPod (RTX 3090, ~$0.34/hr) for the full dataset. Upgrade Railway to a paid plan (~$5–20/month) for production traffic. Add Supabase (free tier) for user accounts and progress tracking when authentication is needed.
+[2026-06-07]  Frontend UX Refinements & Bug Fixes
+              - Applied premium Stitch design exports to the UI.
+              - Fixed scroll, margin, and overflow bugs on all dashboard pages.
+              - Resolved routing and 404 errors on the landing page.
 
----
+[2026-06-07]  Phase 4 (Backend) and Phase 5 (Frontend) MVP code complete
+              - FastAPI backend fully implemented.
+              - Next.js frontend built with Tailwind CSS.
 
-## **6. Project Status**
+[2026-06-06]  Phase 3 model and dataset selected
+              - Selected Qwen/Qwen2.5-1.5B-Instruct for text LoRA fine-tuning.
 
-### **Current Phase:** Phase 6 — Integration (wire frontend to backend)
+[2026-06-05]  Architecture upgraded to 3-server strategy
+              - Dropped Gradio / HuggingFace Spaces approach.
+              - New stack: Vercel (Next.js) + Railway (FastAPI) + HuggingFace (AI).
 
-### **Completed:**
-* ✅ **Phase 1:** All 8 documents extracted → Markdown chunks pushed to `Saad-Elouakate/AI-Adaptive-Learning` on HuggingFace.
-* ✅ **Phase 2:** ChromaDB vector index built and pushed to `Saad-Elouakate/AI-Adaptive-Learning-Index`.
-* ✅ **Phase 1 code:** `src/phase1_extraction/` module (7 files, VLM + CPU fallback, batch folder support).
-* ✅ **Phase 2 code:** `src/phase2_rag/` module (embedder, retriever, config, main).
-* ✅ **Phase 3 dataset:** 277 training-ready Q-A-Reasoning triplets in `output/phase3/` with raw fields, `messages`, and ChatML `text`.
-* ✅ **Phase 4 code:** `src/phase4_backend/` module (FastAPI app, `/api/ask`, `/api/correct`, `/health`, RAG service, LLM service, Pydantic models).
-* ✅ **Phase 5 code:** `frontend/` Next.js app (8 pages: Landing, Chat, Correction, Exercise, Resume, Exam-Gen, Exam-Correction, Cadre).
-* ✅ **Data:** 8 processed documents in `output/phase1-extracted/`:
-  * Maths: cours + exercices corrigés + cadre référenciel
-  * Physics: cours/exercices + cadre référenciel
-  * English: cours + examen + cadre référenciel
-* ✅ **GitHub repository** initialized.
-* ✅ **Railway deployment** configured via `railway.json`.
-
-### **Next Action:**
-Phase 6 — Connect the Next.js frontend to the Railway backend:
-1. Create `frontend/lib/api.js` with API call functions
-2. Wire Chat page to `POST /api/ask`
-3. Wire Correction page to `POST /api/correct`
-4. Set `NEXT_PUBLIC_API_URL` environment variable on Vercel
-5. Deploy and test end-to-end
+[2026-06-03]  MVP scope finalised
+              - Target year: 2ème Bac only.
+              - Subjects: Mathématiques · Physique-Chimie · English.
