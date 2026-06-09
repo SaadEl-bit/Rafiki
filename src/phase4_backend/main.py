@@ -5,7 +5,7 @@ load_dotenv()  # This explicitly loads the .env file
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.phase4_backend.routers import ask, correct
+from src.phase4_backend.routers import ask, correct, cadre, course, generate
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,6 +24,9 @@ app.add_middleware(
 
 app.include_router(ask.router, prefix="/api", tags=["Ask"])
 app.include_router(correct.router, prefix="/api", tags=["Correct"])
+app.include_router(cadre.router, prefix="/api", tags=["Cadre"])
+app.include_router(course.router, prefix="/api", tags=["Course"])
+app.include_router(generate.router, prefix="/api", tags=["Generate"])
 
 @app.get("/health")
 def health_check():

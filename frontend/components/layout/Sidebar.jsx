@@ -10,7 +10,7 @@ export default function Sidebar() {
         { path: '/', icon: 'home', label: 'Home' },
         { path: '/chat', icon: 'chat', label: 'Chat' },
         { path: '/correction', icon: 'fact_check', label: 'Correction' },
-        { path: '/resume', icon: 'description', label: 'Resume Generation' },
+        { path: '/course', icon: 'description', label: 'Course Notes' },
         { path: '/exercise', icon: 'assignment', label: 'Exercise Generation' },
         { path: '/exam-gen', icon: 'quiz', label: 'Exam Generation' },
         { path: '/exam-correction', icon: 'grading', label: 'Exam Correction' },

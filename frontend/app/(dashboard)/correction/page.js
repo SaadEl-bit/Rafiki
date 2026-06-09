@@ -1,5 +1,9 @@
 'use client';
 import { useState, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
 
 export default function PageContent() {
     const [subject, setSubject] = useState("Mathématiques");
@@ -101,8 +105,8 @@ export default function PageContent() {
                                 <span className="material-symbols-outlined text-sm">science</span> Physics/Chemistry
                             </button>
                             <button 
-                                onClick={() => setSubject("Anglais")}
-                                className={`px-5 py-2.5 rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-sm ${subject === "Anglais" ? 'bg-primary-container text-on-primary-container' : 'border border-outline-variant bg-surface text-on-surface-variant hover:bg-surface-container'}`}>
+                                onClick={() => setSubject("English")}
+                                className={`px-5 py-2.5 rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-sm ${subject === "English" ? 'bg-primary-container text-on-primary-container' : 'border border-outline-variant bg-surface text-on-surface-variant hover:bg-surface-container'}`}>
                                 <span className="material-symbols-outlined text-sm">language</span> English
                             </button>
                         </div>
@@ -113,8 +117,21 @@ export default function PageContent() {
                         {correction ? (
                             <div className="flex-grow p-6 bg-surface-container-lowest rounded-xl overflow-y-auto">
                                 <h3 className="font-headline-md text-on-surface mb-4">Correction Détaillée :</h3>
-                                <div className="text-sm text-on-surface whitespace-pre-wrap leading-relaxed">
-                                    {correction}
+                                <div className="prose prose-sm max-w-none text-on-surface">
+                                    <style>{`
+                                        .katex { font-size: 1.1em; }
+                                        .katex-display { margin: 1rem 0; overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+                                        .prose h2 { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-top: 1.5rem; margin-bottom: 1rem; }
+                                        .prose h3 { font-size: 1.2rem; font-weight: 600; color: #334155; margin-top: 1.25rem; margin-bottom: 0.75rem; }
+                                        .prose p { margin-bottom: 0.75rem; line-height: 1.7; color: #334155; }
+                                        .prose strong { font-weight: 700; color: #1e293b; }
+                                    `}</style>
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkMath, remarkGfm]}
+                                        rehypePlugins={[rehypeKatex]}
+                                    >
+                                        {correction}
+                                    </ReactMarkdown>
                                 </div>
                             </div>
                         ) : (

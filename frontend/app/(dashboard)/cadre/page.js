@@ -1,207 +1,201 @@
-import Link from 'next/link';
+'use client';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function PageContent() {
+    const [subjects, setSubjects] = useState([]);
+    const [activeSubject, setActiveSubject] = useState(null);
+    const [search, setSearch] = useState("");
+    const [expandedDomains, setExpandedDomains] = useState({});
+    const [expandedSubs, setExpandedSubs] = useState({});
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cadre`)
+            .then(res => res.json())
+            .then(data => {
+                setSubjects(data);
+                if (data.length > 0) setActiveSubject(data[0].subject_key);
+            })
+            .catch(() => setSubjects([]))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const current = subjects.find(s => s.subject_key === activeSubject);
+
+    const toggleDomain = (idx) => {
+        setExpandedDomains(prev => ({ ...prev, [idx]: !prev[idx] }));
+    };
+
+    const toggleSub = (idx) => {
+        setExpandedSubs(prev => ({ ...prev, [idx]: !prev[idx] }));
+    };
+
+    const askAI = (objective) => {
+        const text = objective.code
+            ? `Explique l'objectif ${objective.code} du programme : ${objective.text}`
+            : objective.text;
+        const subjectName = current?.subject || "";
+        router.push(`/chat?q=${encodeURIComponent(text)}&subject=${encodeURIComponent(subjectName)}`);
+    };
+
+    const filterObjectives = (objs) => {
+        if (!search.trim()) return objs;
+        const q = search.toLowerCase();
+        return objs.filter(o =>
+            o.text.toLowerCase().includes(q) ||
+            (o.code && o.code.toLowerCase().includes(q))
+        );
+    };
+
     return (
-        <>
-<main className="flex-1 flex flex-col h-full overflow-y-auto pt-6 px-gutter pb-margin-desktop max-w-container-max w-full">
-{/*  Page Header  */}
-<div className="mb-8">
-<h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">Cadre Référenciel</h1>
-<p className="font-body-lg text-body-lg text-on-surface-variant">Official 2nd Bac Curriculum &amp; Exam Weighting</p>
-</div>
-{/*  Subject Selector  */}
-<div className="flex gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-<button className="px-6 py-3 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-sm transition-transform hover:scale-105 whitespace-nowrap">
-                Mathématiques
-            </button>
-<button className="px-6 py-3 rounded-full bg-surface-container-highest text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors whitespace-nowrap">
-                Physique-Chimie
-            </button>
-<button className="px-6 py-3 rounded-full bg-surface-container-highest text-on-surface-variant hover:bg-surface-variant font-label-md text-label-md transition-colors whitespace-nowrap">
-                English
-            </button>
-</div>
-{/*  Bento Grid Layout  */}
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-{/*  Left Column: Curriculum Breakdown (Accordions)  */}
-<div className="lg:col-span-8 flex flex-col gap-6">
-{/*  Domain 1: Analyse  */}
-<div className="bg-surface-container-lowest rounded-[24px] ambient-shadow overflow-hidden group">
-<div className="h-2 w-full bg-primary-container"></div>
-<div className="p-card-padding">
-<div className="flex justify-between items-center cursor-pointer">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center text-primary">
-<span className="material-symbols-outlined">function</span>
-</div>
-<div>
-<h3 className="font-headline-sm text-headline-sm text-on-surface">Analyse</h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Limites, Continuité, Dérivation, Étude de fonctions</p>
-</div>
-</div>
-<span className="material-symbols-outlined text-on-surface-variant transition-transform duration-300">expand_more</span>
-</div>
-<div className="hidden mt-6 pt-6 border-t border-surface-container-high">
-<ul className="space-y-4">
-<li className="flex items-start gap-3">
-<span className="material-symbols-outlined text-primary-container text-[20px] mt-0.5">check_circle</span>
-<div>
-<h4 className="font-label-md text-label-md text-on-surface">Limites et Continuité</h4>
-<p className="font-body-sm text-body-sm text-on-surface-variant">Calcul de limites, théorèmes de valeurs intermédiaires.</p>
-</div>
-</li>
-<li className="flex items-start gap-3">
-<span className="material-symbols-outlined text-primary-container text-[20px] mt-0.5">check_circle</span>
-<div>
-<h4 className="font-label-md text-label-md text-on-surface">Dérivation et Étude de Fonctions</h4>
-<p className="font-body-sm text-body-sm text-on-surface-variant">Fonctions logarithmiques, exponentielles et rationnelles.</p>
-</div>
-</li>
-<li className="flex items-start gap-3">
-<span className="material-symbols-outlined text-primary-container text-[20px] mt-0.5">check_circle</span>
-<div>
-<h4 className="font-label-md text-label-md text-on-surface">Calcul Intégral</h4>
-<p className="font-body-sm text-body-sm text-on-surface-variant">Intégration par parties, calcul d&apos;aires et de volumes.</p>
-</div>
-</li>
-</ul>
-</div>
-</div>
-</div>
-{/*  Domain 2: Algèbre  */}
-<div className="bg-surface-container-lowest rounded-[24px] ambient-shadow overflow-hidden group">
-<div className="h-2 w-full bg-secondary-container"></div>
-<div className="p-card-padding">
-<div className="flex justify-between items-center cursor-pointer">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center text-secondary">
-<span className="material-symbols-outlined">calculate</span>
-</div>
-<div>
-<h3 className="font-headline-sm text-headline-sm text-on-surface">Algèbre</h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Nombres Complexes, Suites Numériques</p>
-</div>
-</div>
-<span className="material-symbols-outlined text-on-surface-variant transition-transform duration-300">expand_more</span>
-</div>
-<div className="hidden mt-6 pt-6 border-t border-surface-container-high">
-<ul className="space-y-4">
-<li className="flex items-start gap-3">
-<span className="material-symbols-outlined text-secondary-container text-[20px] mt-0.5">check_circle</span>
-<div>
-<h4 className="font-label-md text-label-md text-on-surface">Nombres Complexes</h4>
-<p className="font-body-sm text-body-sm text-on-surface-variant">Forme algébrique, trigonométrique, géométrie complexe.</p>
-</div>
-</li>
-<li className="flex items-start gap-3">
-<span className="material-symbols-outlined text-secondary-container text-[20px] mt-0.5">check_circle</span>
-<div>
-<h4 className="font-label-md text-label-md text-on-surface">Suites Numériques</h4>
-<p className="font-body-sm text-body-sm text-on-surface-variant">Récurrence, convergence, suites arithmétiques et géométriques.</p>
-</div>
-</li>
-</ul>
-</div>
-</div>
-</div>
-{/*  Domain 3: Géométrie  */}
-<div className="bg-surface-container-lowest rounded-[24px] ambient-shadow overflow-hidden group">
-<div className="h-2 w-full bg-tertiary-container"></div>
-<div className="p-card-padding">
-<div className="flex justify-between items-center cursor-pointer">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
-<span className="material-symbols-outlined">architecture</span>
-</div>
-<div>
-<h3 className="font-headline-sm text-headline-sm text-on-surface">Géométrie</h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Produit Scalaire, Géométrie dans l&apos;espace</p>
-</div>
-</div>
-<span className="material-symbols-outlined text-on-surface-variant transition-transform duration-300">expand_more</span>
-</div>
-<div className="hidden mt-6 pt-6 border-t border-surface-container-high">
-<ul className="space-y-4">
-<li className="flex items-start gap-3">
-<span className="material-symbols-outlined text-tertiary-container text-[20px] mt-0.5">check_circle</span>
-<div>
-<h4 className="font-label-md text-label-md text-on-surface">Géométrie Analytique Spatiale</h4>
-<p className="font-body-sm text-body-sm text-on-surface-variant">Équations de plans, droites, distances dans l&apos;espace.</p>
-</div>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-{/*  Right Column: Key Stats Panel  */}
-<div className="lg:col-span-4 flex flex-col gap-6">
-{/*  Quick Stats Card  */}
-<div className="bg-surface-container-lowest rounded-[24px] p-card-padding ambient-shadow">
-<h3 className="font-headline-md text-headline-md text-on-surface mb-6">Exam Details</h3>
-<div className="space-y-6">
-<div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl">
-<div className="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
-<span className="material-symbols-outlined">grade</span>
-</div>
-<div>
-<p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Coefficient</p>
-<p className="font-headline-sm text-headline-sm text-on-surface font-bold">7</p>
-</div>
-</div>
-<div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl">
-<div className="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
-<span className="material-symbols-outlined">timer</span>
-</div>
-<div>
-<p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Duration</p>
-<p className="font-headline-sm text-headline-sm text-on-surface font-bold">4 Hours</p>
-</div>
-</div>
-</div>
-</div>
-{/*  Weighting Breakdown Card  */}
-<div className="bg-surface-container-lowest rounded-[24px] p-card-padding ambient-shadow">
-<h3 className="font-headline-md text-headline-md text-on-surface mb-6">Weighting by Domain</h3>
-<div className="space-y-4">
-{/*  Analyze Bar  */}
-<div>
-<div className="flex justify-between items-center mb-2">
-<span className="font-label-md text-label-md text-on-surface">Analyse</span>
-<span className="font-label-md text-label-md text-primary font-bold">50%</span>
-</div>
-<div className="w-full bg-surface-container-highest rounded-full h-2.5">
-<div className="bg-primary-container h-2.5 rounded-full" style={{"width":"50%"}}></div>
-</div>
-</div>
-{/*  Algebra Bar  */}
-<div>
-<div className="flex justify-between items-center mb-2">
-<span className="font-label-md text-label-md text-on-surface">Algèbre</span>
-<span className="font-label-md text-label-md text-secondary font-bold">25%</span>
-</div>
-<div className="w-full bg-surface-container-highest rounded-full h-2.5">
-<div className="bg-secondary-container h-2.5 rounded-full" style={{"width":"25%"}}></div>
-</div>
-</div>
-{/*  Geometry Bar  */}
-<div>
-<div className="flex justify-between items-center mb-2">
-<span className="font-label-md text-label-md text-on-surface">Géométrie</span>
-<span className="font-label-md text-label-md text-tertiary font-bold">25%</span>
-</div>
-<div className="w-full bg-surface-container-highest rounded-full h-2.5">
-<div className="bg-tertiary-container h-2.5 rounded-full" style={{"width":"25%"}}></div>
-</div>
-</div>
-</div>
-<div className="mt-6 pt-6 border-t border-surface-container-high text-center">
-<p className="font-body-sm text-body-sm text-on-surface-variant italic">Based on Ministry of Education 2024 directives.</p>
-</div>
-</div>
-</div>
-</div>
-</main>
-        </>
+        <main className="flex-grow h-full overflow-y-auto w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-10 gap-gutter flex flex-col">
+            <header className="mb-6">
+                <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">
+                    Cadre Référenciel <span className="font-arabic-brand text-primary opacity-80 text-xl ml-2 inline-block align-middle">الإطار المرجعي</span>
+                </h1>
+                <p className="font-body-lg text-body-lg text-on-surface-variant">
+                    Programme officiel du 2ème Bac — objectifs d'apprentissage par matière.
+                </p>
+            </header>
+
+            {/* Search */}
+            <div className="mb-6">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Rechercher un objectif par mot-clé ou code..."
+                    className="w-full rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant px-5 py-3.5 focus:ring-2 focus:ring-primary-fixed-dim focus:border-transparent outline-none transition-all"
+                />
+            </div>
+
+            {/* Subject Tabs */}
+            <div className="flex flex-wrap gap-3 mb-6">
+                {subjects.map(s => (
+                    <button
+                        key={s.subject_key}
+                        onClick={() => { setActiveSubject(s.subject_key); setSearch(""); }}
+                        className={`px-5 py-2.5 rounded-xl font-semibold transition-colors shadow-sm ${
+                            activeSubject === s.subject_key
+                            ? 'bg-primary-container text-on-primary-container'
+                            : 'border border-outline-variant bg-surface text-on-surface-variant hover:bg-surface-container'
+                        }`}
+                    >
+                        {s.subject}
+                    </button>
+                ))}
+            </div>
+
+            {loading && (
+                <div className="flex items-center justify-center py-20">
+                    <span className="material-symbols-outlined text-4xl text-on-surface-variant animate-spin">sync</span>
+                </div>
+            )}
+
+            {!loading && current && current.type === "objectives" && (
+                <div className="space-y-4">
+                    {current.domains.map((domain, di) => {
+                        const filteredSubs = domain.sub_domains.map(sub => ({
+                            ...sub,
+                            objectives: filterObjectives(sub.objectives),
+                        })).filter(sub => sub.objectives.length > 0 || !search);
+                        if (filteredSubs.length === 0 && search) return null;
+
+                        return (
+                            <div key={di} className="bg-surface rounded-2xl border border-outline-variant overflow-hidden">
+                                <button
+                                    onClick={() => toggleDomain(di)}
+                                    className="w-full flex items-center justify-between p-5 hover:bg-surface-container-low transition-colors text-left"
+                                >
+                                    <h2 className="font-headline-md text-headline-md text-on-surface">{domain.name}</h2>
+                                    <span className="material-symbols-outlined text-on-surface-variant transition-transform"
+                                        style={{ transform: expandedDomains[di] ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                                        expand_more
+                                    </span>
+                                </button>
+
+                                {expandedDomains[di] && (
+                                    <div className="px-5 pb-5 space-y-3">
+                                        {filteredSubs.map((sub, si) => (
+                                            <div key={si} className="bg-surface-container-low rounded-xl overflow-hidden">
+                                                <button
+                                                    onClick={() => toggleSub(`${di}-${si}`)}
+                                                    className="w-full flex items-center justify-between p-4 hover:bg-surface-container transition-colors text-left"
+                                                >
+                                                    <h3 className="font-label-lg text-label-lg text-on-surface font-semibold">{sub.name}</h3>
+                                                    <span className="material-symbols-outlined text-on-surface-variant transition-transform text-sm"
+                                                        style={{ transform: expandedSubs[`${di}-${si}`] ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                                                        expand_more
+                                                    </span>
+                                                </button>
+
+                                                {expandedSubs[`${di}-${si}`] && (
+                                                    <div className="px-4 pb-4 space-y-2">
+                                                        {sub.objectives.map((obj, oi) => (
+                                                            <div key={oi}
+                                                                className="flex items-start gap-3 p-3.5 rounded-xl bg-surface hover:bg-surface-container-high transition-colors group"
+                                                            >
+                                                                <div className="flex-1 min-w-0">
+                                                                    {obj.code && (
+                                                                        <span className="inline-block bg-primary-container text-on-primary-container text-xs font-bold px-2 py-0.5 rounded-md mr-2 mb-1">
+                                                                            {obj.code}
+                                                                        </span>
+                                                                    )}
+                                                                    <span className="text-sm text-on-surface">{obj.text}</span>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => askAI(obj)}
+                                                                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary-fixed"
+                                                                    title="Demander à Rafiki"
+                                                                >
+                                                                    <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {!loading && current && current.type === "document" && (
+                <div className="bg-surface rounded-2xl border border-outline-variant p-6">
+                    {current.domains.map((domain, di) => (
+                        <div key={di} className="mb-6">
+                            <h2 className="font-headline-md text-headline-md text-on-surface mb-3">{domain.name}</h2>
+                            {domain.sub_domains.map((sub, si) => (
+                                <div key={si} className="ml-4 mb-4">
+                                    <h3 className="font-label-lg text-label-lg text-on-surface font-semibold mb-2">{sub.name}</h3>
+                                    {sub.objectives.map((obj, oi) => (
+                                        <p key={oi} className="text-sm text-on-surface-variant ml-4 mb-1">{obj.text}</p>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                    {current.sections && current.sections.length > 0 && (
+                        <div className="text-sm text-on-surface-variant whitespace-pre-wrap leading-relaxed">
+                            {current.sections.map((s, i) => (
+                                <p key={i} className="mb-2">{s.content}</p>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {!loading && !current && (
+                <div className="text-center py-20 text-on-surface-variant">
+                    <p>Aucune donnée disponible.</p>
+                </div>
+            )}
+        </main>
     );
 }
