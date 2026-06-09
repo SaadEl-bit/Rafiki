@@ -17,8 +17,8 @@ export default function PageContent() {
     };
 
     const handleCorrection = async () => {
-        if (!file && !notes.trim()) {
-            alert("Veuillez importer un fichier ou écrire un texte.");
+        if (!file) {
+            alert("Veuillez d'abord importer un document (PDF ou image) contenant l'exercice à corriger.");
             return;
         }
 
@@ -186,7 +186,7 @@ export default function PageContent() {
                         )}
                         <button 
                             onClick={handleCorrection}
-                            disabled={isLoading || (!file && !notes.trim())}
+                            disabled={isLoading || !file}
                             className="w-full bg-primary-container text-on-primary-container px-6 py-4 rounded-xl font-headline-md text-headline-md font-semibold hover:bg-primary-fixed transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50">
                             {isLoading ? "Correction..." : "Correct my Exercise"}
                         </button>

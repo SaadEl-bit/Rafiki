@@ -74,6 +74,11 @@ export default function PageContent() {
             const data = await response.json();
             setMessages([...newMessages, { role: 'assistant', content: data.answer }]);
             
+            // Persist session_id from backend for conversation memory
+            if (data.session_id) {
+                setSessionId(data.session_id);
+            }
+            
             // Clear the pending document text so it's not sent again on the next question
             setPendingDocumentText(null); 
             

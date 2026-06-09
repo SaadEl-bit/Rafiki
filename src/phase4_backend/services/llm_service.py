@@ -16,18 +16,19 @@ if not HF_TOKEN:
 
 client = InferenceClient(token=HF_TOKEN)
 
-def generate_answer(context: str, question: str) -> str:
+def generate_answer(context: str, question: str, history: list = None) -> str:
     system_prompt = (
         "Vous êtes Rafiki, un tuteur IA pour les étudiants marocains (2ème Bac).\n"
         "Utilisez le contexte fourni pour répondre à la question de manière pédagogique.\n"
         "Si le contexte ne contient pas l'information, dites-le.\n"
-        f"Contexte:\n{context}"
+        "Vous avez une conversation avec l'étudiant. Utilisez l'historique pour suivre le fil.\n"
+        f"Contexte du cours:\n{context}"
     )
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": question}
-    ]
+    messages = [{"role": "system", "content": system_prompt}]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": question})
 
     logger.info(f"===> Calling HuggingFace API with model: {HF_MODEL_ID} <===")
 
