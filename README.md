@@ -33,6 +33,22 @@ The project relies on a highly scalable, free-tier-friendly **Dual-GPU architect
 
 ---
 
+## 📂 Project Structure
+
+```text
+M3allem/
+├── frontend/             # Next.js 16 UI (React, Tailwind CSS, Vercel)
+├── src/                  # Core logic divided into development phases
+│   ├── phase1_extraction/# PDF to Markdown OCR pipeline
+│   ├── phase2_rag/       # ChromaDB knowledge base generation
+│   ├── phase3/           # LLM fine-tuning scripts and datasets
+│   └── phase4_backend/   # FastAPI application (Dual-GPU Kaggle deployment)
+├── kaggle/               # Kaggle-specific execution scripts & pipelines
+└── Document-Data-Set/    # Raw Moroccan curriculum PDFs
+```
+
+---
+
 ## 🛠️ Quick Start & How to Run
 
 **1. Run the Backend (Kaggle)**

@@ -6,12 +6,36 @@ This is the ultimate setup for your presentation because it guarantees zero API 
 
 ---
 
+## Step 0: Upload Models to Kaggle as a Dataset
+
+Before starting, upload your downloaded models to Kaggle:
+
+1. Go to [kaggle.com/datasets](https://www.kaggle.com/datasets) → **New Dataset**
+2. Upload the file `models/rafiki_models_for_kaggle.zip`
+3. Set:
+   - **Title:** `rafiki-models`
+   - **Visibility:** Private (or Public)
+4. Click **Create**
+5. Note your dataset slug: `your-username/rafiki-models`
+
+When added as input in a notebook, the models will be at:
+```
+/kaggle/input/rafiki-models/
+├── text-model/
+└── vision-model/
+```
+
+---
+
 ## Step 1: Prepare the Kaggle Environment
 
 1. Open [Kaggle](https://www.kaggle.com/) and create a **New Notebook**.
 2. On the right-hand panel, under **Session Options**:
    - **Accelerator:** Set to `GPU T4 x2` (or `GPU T4 x1`).
    - **Internet:** Ensure it is turned `ON`.
+3. On the right-hand panel, under **Data**:
+   - Click **Add Data** → Search for `rafiki-models` (your uploaded dataset)
+   - Add it. This makes the models available at `/kaggle/input/rafiki-models/`
 
 ---
 
@@ -39,7 +63,7 @@ os.chdir('/kaggle/working/app')
 env_content = f"""
 HF_TOKEN={hf_token}
 CHROMA_DB_DIR=./chroma_db_cache
-VL_MODEL_ID=meta-llama/Llama-3.2-11B-Vision-Instruct
+VL_MODEL_ID=Qwen/Qwen2.5-VL-3B-Instruct
 """
 with open(".env", "w") as f:
     f.write(env_content)
@@ -53,6 +77,12 @@ print(".env file created securely!")
 
 # 6. Install Localtunnel (to create a public URL)
 !npm install -g localtunnel
+
+# 7. Define model paths from Kaggle Dataset Input
+TEXT_MODEL_PATH = "/kaggle/input/rafiki-models/text-model"
+VISION_MODEL_PATH = "/kaggle/input/rafiki-models/vision-model"
+print(f"Text model path: {TEXT_MODEL_PATH}")
+print(f"Vision model path: {VISION_MODEL_PATH}")
 ```
 *Run this cell and wait for the installations to complete.*
 
@@ -60,14 +90,11 @@ print(".env file created securely!")
 
 ## Step 3: Override API to Use Dual Kaggle GPUs
 
-By default, your code tries to call the Hugging Face Serverless APIs. We need to tell it to load the models **directly into the Kaggle GPUs** instead. 
+By default, your code tries to call the Hugging Face Serverless APIs. We need to tell it to load the models **directly into the Kaggle GPUs** from the dataset input instead.
 
 Create a second code cell. This script will overwrite both `llm_service.py` and `extraction_service.py` to utilize Kaggle's dual T4 setup:
-- **GPU 0** will run your Fine-Tuned Text Model.
-- **GPU 1** will run your Vision Model.
-
-> [!TIP]
-> **Changing Model Names:** Look for the `👉 CHANGE YOUR MODEL NAME HERE 👈` comments in the code below. That is where you paste your exact Hugging Face repository links before running the cell!
+- **GPU 0** will run your Fine-Tuned Text Model (loaded from `/kaggle/input/rafiki-models/text-model`).
+- **GPU 1** will run your Vision Model (loaded from `/kaggle/input/rafiki-models/vision-model`).
 
 ```python
 # CELL 2: Override Backend Services to Use Dual Kaggle GPUs
@@ -83,28 +110,28 @@ from transformers import pipeline, BitsAndBytesConfig
 
 logger = logging.getLogger(__name__)
 
-# 👉 CHANGE YOUR FINE-TUNED TEXT MODEL NAME HERE 👈
-HF_MODEL_ID = "Saad-Elouakate/rafiki-qwen-2.5-finetune"
+# Load text model from Kaggle Dataset Input (no download needed!)
+TEXT_MODEL_PATH = "/kaggle/input/rafiki-models/text-model"
 
-logger.info(f"Downloading and loading {HF_MODEL_ID} into GPU 0 in 4-bit... This happens automatically.")
+logger.info(f"Loading text model from {TEXT_MODEL_PATH} into GPU 0 in 4-bit...")
 
 # 4-bit Quantization to save massive amounts of VRAM!
 quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
 
-generator = pipeline("text-generation", model=HF_MODEL_ID, device_map="cuda:0", model_kwargs={"quantization_config": quant_config})
+generator = pipeline("text-generation", model=TEXT_MODEL_PATH, device_map="cuda:0", model_kwargs={"quantization_config": quant_config})
 logger.info("Text Model loaded successfully in 4-bit!")
 
 def generate_answer(context: str, question: str) -> str:
-    system_prompt = "Vous êtes Rafiki, un tuteur IA pour les étudiants marocains (2ème Bac). Utilisez le contexte fourni."
-    prompt = f"<|im_start|>system\\n{system_prompt}\\nContexte:\\n{context}<|im_end|>\\n<|im_start|>user\\n{question}<|im_end|>\\n<|im_start|>assistant\\n"
+    system_prompt = "Vous \u00eates Rafiki, un tuteur IA pour les \u00e9tudiants marocains (2\u00e8me Bac). Utilisez le contexte fourni."
+    prompt = f"<|im_start|>system\n{system_prompt}\nContexte:\n{context}<|im_end|>\n<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant\n"
     res = generator(prompt, max_new_tokens=1500, temperature=0.3)
-    return res[0]['generated_text'].split("<|im_start|>assistant\\n")[-1]
+    return res[0]['generated_text'].split("<|im_start|>assistant\n")[-1]
 
 def correct_exercise(context: str, exercise_text: str) -> str:
-    system_prompt = "Vous êtes Rafiki... Corrigez cet exercice étape par étape."
-    prompt = f"<|im_start|>system\\n{system_prompt}\\nContexte:\\n{context}<|im_end|>\\n<|im_start|>user\\n{exercise_text}<|im_end|>\\n<|im_start|>assistant\\n"
+    system_prompt = "Vous \u00eates Rafiki... Corrigez cet exercice \u00e9tape par \u00e9tape."
+    prompt = f"<|im_start|>system\n{system_prompt}\nContexte:\n{context}<|im_end|>\n<|im_start|>user\n{exercise_text}<|im_end|>\n<|im_start|>assistant\n"
     res = generator(prompt, max_new_tokens=2000, temperature=0.3)
-    return res[0]['generated_text'].split("<|im_start|>assistant\\n")[-1]
+    return res[0]['generated_text'].split("<|im_start|>assistant\n")[-1]
 """
 with open("src/phase4_backend/services/llm_service.py", "w", encoding="utf-8") as f:
     f.write(override_llm)
@@ -122,20 +149,20 @@ import torch
 
 logger = logging.getLogger(__name__)
 
-# 👉 CHANGE YOUR VISION MODEL NAME HERE 👈
-VL_MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
+# Load vision model from Kaggle Dataset Input (no download needed!)
+VISION_MODEL_PATH = "/kaggle/input/rafiki-models/vision-model"
 
-logger.info(f"Downloading and loading {VL_MODEL_ID} into GPU 1 in 4-bit... This happens automatically.")
+logger.info(f"Loading vision model from {VISION_MODEL_PATH} into GPU 1 in 4-bit...")
 
-# 4-bit Quantization to fit the massive 7B Vision model inside the 15GB GPU!
+# 4-bit Quantization to fit the massive Vision model inside the 15GB GPU!
 quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
 
 model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-    VL_MODEL_ID, 
+    VISION_MODEL_PATH, 
     quantization_config=quant_config, 
     device_map="cuda:1"
 )
-processor = AutoProcessor.from_pretrained(VL_MODEL_ID)
+processor = AutoProcessor.from_pretrained(VISION_MODEL_PATH)
 logger.info("Vision Model loaded successfully in 4-bit!")
 
 def file_to_base64_images(file_bytes: bytes, filename: str) -> List[str]:
@@ -164,9 +191,10 @@ def extract_text_via_vl(base64_images: List[str]) -> str:
         ).to("cuda:1")
 
         generated_ids = model.generate(**inputs, max_new_tokens=2000)
-        generated_ids_trimmed = [out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)]
+        generated_ids_trimmed = [out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids
+)]
         output_text = processor.batch_decode(generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False)
-        extracted_text += f"\\n\\n--- Page {idx+1} ---\\n\\n" + output_text[0]
+        extracted_text += f"\n\n--- Page {idx+1} ---\n\n" + output_text[0]
         
     return extracted_text.strip()
 """
@@ -193,21 +221,21 @@ import urllib.request
 print("Starting FastAPI Server...")
 subprocess.Popen(["python", "-m", "uvicorn", "src.phase4_backend.main:app", "--host", "0.0.0.0", "--port", "8000"])
 
-# Give the server 20 seconds to boot up, download ChromaDB, and load the 1.5B model into VRAM
+# Give the server 20 seconds to boot up, load models from dataset into VRAM
 time.sleep(20) 
 
 # 2. Get the public IP address (you will need this password for localtunnel)
 ip = urllib.request.urlopen('https://ipv4.icanhazip.com').read().decode('utf8').strip("\n")
-print(f"\\n==============================================")
-print(f"🔐 YOUR LOCALTUNNEL PASSWORD IS: {ip}")
-print(f"==============================================\\n")
+print(f"\n==============================================")
+print(f"YOUR LOCALTUNNEL PASSWORD IS: {ip}")
+print(f"==============================================\n")
 
 # 3. Start Localtunnel to generate the public HTTPS link
 !npx localtunnel --port 8000
 ```
 
 ### What happens when you run Cell 3:
-1. **Model Download Phase:** As soon as FastAPI boots up, it will automatically download both the Text and Vision models from Hugging Face straight into Kaggle. This will take ~2-5 minutes the very first time.
+1. **Model Loading Phase:** FastAPI boots up and loads both models from the Kaggle Dataset Input directly into GPU VRAM. This is much faster than downloading (~30 seconds vs ~5 minutes).
 2. It will print a password (an IP address). **Copy this password**.
 3. It will output a URL that looks like `https://funny-words-go.loca.lt`.
 4. Click that link. It will ask for a password. Paste the IP address.

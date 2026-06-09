@@ -77,37 +77,73 @@ STUDENT'S BROWSER
 
 ## **3. MVP Build Roadmap**
 
-### **Phase 1 — PDF Extraction Pipeline**
-> **Objective:** Convert raw Moroccan curriculum PDFs → structured Markdown chunks.
-**Success Condition:** All 8 PDFs/documents → clean Markdown + `chunks.json` per subject, pushed to HuggingFace. ✅
+*Note: The MVP (Minimum Viable Product) is designed as a focused initial release to demonstrate the core concept of an AI Moroccan tutor and validate its technical and educational viability before scaling to more subjects and users.*
 
-### **Phase 2 — RAG Knowledge Base**
-> **Objective:** Build a semantic index for instant lesson retrieval.
+### **Phase 1 — PDF Extraction Pipeline**
+> **Objective:** Convert raw, unstructured Moroccan curriculum PDFs into structured, queryable Markdown chunks.
+**Actions:** Used Python pipelines to parse 8 core documents per subject, segmenting them by lessons, theorems, and exercises.
+**Success Condition:** All PDFs/documents converted to clean Markdown + `chunks.json` per subject, pushed to HuggingFace. ✅
+
+### **Phase 2 — RAG Knowledge Base Generation**
+> **Objective:** Build a robust semantic index for instant, accurate lesson retrieval.
+**Actions:** Embedded the extracted markdown chunks into a Vector Database (ChromaDB), optimizing chunk sizes to preserve mathematical formulas and context.
 **Success Condition:** Query `"How to find the derivative of a polynomial?"` returns the correct lesson chunks. ✅
 
-### **Phase 3 — Model Fine-Tuning**
-> **Objective:** Teach a small LLM the style and format of Moroccan curriculum Q&A.
+### **Phase 3 — LLM Fine-Tuning**
+> **Objective:** Teach a small, efficient LLM (Qwen2.5-1.5B) the exact style, format, and reasoning process of Moroccan curriculum Q&A.
+**Actions:** Created custom instruction datasets and performed LoRA fine-tuning so the model answers step-by-step like a Moroccan professor.
 **Success Condition:** Fine-tuned model answers in the correct Moroccan curriculum style. ✅
 
 ### **Phase 4 & 4.5 — FastAPI Backend + Live OCR**
-> **Objective:** Expose RAG retrieval and LLM inference, and handle live user uploads.
+> **Objective:** Expose RAG retrieval and LLM inference via an API, and handle live user document uploads.
 **Actions:**
 1. Implemented `/api/ask` and `/api/correct` utilizing HuggingFace Inference API.
 2. Added `/api/upload` endpoint using `PyMuPDF` and `Qwen2.5-VL` Serverless API for OCR.
-3. Added Ephemeral In-Memory ChromaDB for temporary session RAG.
+3. Added Ephemeral In-Memory ChromaDB for temporary session RAG, allowing users to query their own notes.
 **Success Condition:** Uploading a PDF returns extracted text, and asking a question retrieves context from it. ✅
 
-### **Phase 5 — Next.js Frontend**
-> **Objective:** Build the student-facing web interface and deploy to Vercel.
+### **Phase 5 — Next.js Frontend UI**
+> **Objective:** Build a premium, intuitive student-facing web interface and deploy it to Vercel.
+**Actions:** Developed pages for Q&A Chat, Exercise Correction, and Curriculum exploring using React, styled heavily with Tailwind CSS and premium Stitch templates.
 **Success Condition:** Student interface fully styled using premium templates (Stitch) and navigation fixed. ✅
 
 ### **Phase 6 — Full Integration & End-to-End Test**
-> **Objective:** Validate the complete 3-server pipeline works together.
+> **Objective:** Validate the complete 3-server pipeline (Vercel Frontend ↔ FastAPI Localtunnel ↔ Kaggle GPU Backend) works together seamlessly.
 **Success Condition:** End-to-end testing successful with frontend talking to the deployed backend. ⬜ Not started
 
 ---
 
-## **4. Status Log**
+## **4. Project Folder Architecture**
+
+The repository is modularly organized into independent components handling UI, API, and the AI/Data pipeline:
+
+```text
+M3allem/
+├── frontend/                 # 🖥️ Next.js 16 User Interface
+│   ├── app/                  # App Router pages (chat, correction, etc.)
+│   ├── components/           # Reusable React components (Stitch styled)
+│   ├── public/               # Static assets & images
+│   └── tailwind.config.js    # Premium UI styling configuration
+├── src/                      # 🧠 Core Backend & AI Pipelines
+│   ├── phase1_extraction/    # Qwen2.5-VL OCR pipeline for extracting Moroccan PDFs
+│   ├── phase2_rag/           # ChromaDB semantic chunking and index builder
+│   ├── phase3/               # Qwen2.5-1.5B text LoRA fine-tuning scripts
+│   └── phase4_backend/       # FastAPI server (localtunnel, OCR, RAG, Chat routes)
+├── kaggle/                   # ⚡ Cloud GPU Execution Environment
+│   ├── pdf_to_markdown_pipeline.py  # Automated Kaggle notebook scripts
+│   └── prepare_kaggle_dataset.py    # Scripts to set up T4 dual-GPU environments
+├── Document-Data-Set/        # 📚 Source Knowledge Base
+│   └── (PDFs & Images)       # Raw 2Bac curriculum files for Math, Physics, English
+└── descriptions/             # 📝 Documentation & Prompts
+```
+
+**Key Architectural Highlights:**
+- **Decoupled Frontend/Backend:** The `frontend/` runs independently (designed for Vercel) while `src/phase4_backend/` serves as the heavy-lifting API (designed for Kaggle Dual-GPU).
+- **Phased AI Pipeline:** `src/` is cleanly divided into consecutive AI phases (Extraction → RAG → Fine-Tuning → Deployment) ensuring reproducibility.
+
+---
+
+## **5. Status Log**
 
 [2026-06-08]  Phase 4.5 (Backend OCR & Session RAG) Completed
               - Shifted backend deployment to Kaggle Notebooks utilizing Dual T4 GPUs.
@@ -135,3 +171,26 @@ STUDENT'S BROWSER
 [2026-06-03]  MVP scope finalised
               - Target year: 2ème Bac only.
               - Subjects: Mathématiques · Physique-Chimie · English.
+
+---
+
+## **6. Quick Start & How to Run**
+
+**1. Run the Backend (Kaggle)**
+1. Open your Kaggle Notebook equipped with **Dual T4 GPUs**.
+2. **Run Cell 1** to clone the repository and install dependencies (`transformers`, `bitsandbytes`, `localtunnel`).
+3. **Run Cell 2** to override the backend files for dual-GPU 4-bit quantization (to prevent CUDA Out-of-Memory).
+4. **Run Cell 3** to boot the FastAPI server and generate your public Localtunnel URL.
+
+**2. Run the Frontend (Local or Vercel)**
+1. Copy the Localtunnel URL generated by Kaggle.
+2. Open `frontend/.env` (or `.env` in the root) and set:
+   ```env
+   NEXT_PUBLIC_API_URL=https://your-localtunnel-url.loca.lt
+   ```
+3. Run the frontend locally:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
