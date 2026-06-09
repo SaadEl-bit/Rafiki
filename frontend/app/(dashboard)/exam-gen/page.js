@@ -1,128 +1,199 @@
-import Link from 'next/link';
+'use client';
+import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
 
 export default function PageContent() {
+    const [topicsData, setTopicsData] = useState({});
+    const [subject, setSubject] = useState("maths");
+    const [topic, setTopic] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState("");
+    const [expandedCorr, setExpandedCorr] = useState({});
+
+    const subjectNames = { maths: "Mathématiques", physics: "Physique-Chimie", english: "Anglais" };
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate/topics`)
+            .then(res => res.json())
+            .then(data => setTopicsData(data))
+            .catch(() => {});
+    }, []);
+
+    const currentTopics = topicsData[subject]?.topics || [];
+
+    const handleSubjectChange = (newSubject) => {
+        setSubject(newSubject);
+        setTopic("");
+        setResult(null);
+        setError("");
+    };
+
+    const generate = async () => {
+        setLoading(true);
+        setResult(null);
+        setError("");
+        setExpandedCorr({});
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate/exam`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject, topic }),
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || "Erreur lors de la génération");
+            }
+            const data = await res.json();
+            setResult(data);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleCorr = (idx) => {
+        setExpandedCorr(prev => ({ ...prev, [idx]: !prev[idx] }));
+    };
+
     return (
-        <>
-<main className="flex-1 h-full overflow-y-auto p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full">
-<div className="mb-8">
-<h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">Create Custom Mock Exam</h1>
-<p className="font-body-md text-body-md text-on-surface-variant">Configure parameters to generate a targeted practice session.</p>
-</div>
-{/*  Bento Grid Layout  */}
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-{/*  Left Column: Configuration  */}
-<div className="lg:col-span-7 space-y-gutter">
-{/*  Subject & Chapters Card  */}
-<div className="bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-outline-variant/30">
-<h3 className="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-primary">menu_book</span>
-                            Curriculum Scope
-                        </h3>
-<div className="space-y-6">
-<div>
-<label className="block font-label-md text-label-md text-on-surface-variant mb-2">Subject Context</label>
-<select className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-<option>Mathématiques (Current)</option>
-<option>Physique-Chimie</option>
-<option>English</option>
-</select>
-</div>
-<div>
-<label className="block font-label-md text-label-md text-on-surface-variant mb-3">Select Chapters</label>
-<div className="flex flex-wrap gap-2">
-<button className="px-4 py-2 rounded-full border border-primary bg-primary-container/10 text-primary font-label-sm text-label-sm hover:bg-primary-container/20 transition-colors">
-                                        Calculus Basics
+        <main className="flex-grow h-full overflow-y-auto w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-10 flex flex-col">
+            <header className="mb-6">
+                <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">
+                    Exam Generation
+                </h1>
+                <p className="font-body-lg text-body-lg text-on-surface-variant">
+                    Génère un examen complet corrigé, adapté au programme du 2ème Bac.
+                </p>
+            </header>
+
+            {/* Subject Tabs */}
+            <div className="flex flex-wrap gap-3 mb-6">
+                {Object.entries(subjectNames).map(([key, name]) => (
+                    <button
+                        key={key}
+                        onClick={() => handleSubjectChange(key)}
+                        className={`px-5 py-2.5 rounded-xl font-semibold transition-colors shadow-sm ${
+                            subject === key
+                            ? 'bg-primary-container text-on-primary-container'
+                            : 'border border-outline-variant bg-surface text-on-surface-variant hover:bg-surface-container'
+                        }`}
+                    >
+                        {name}
+                    </button>
+                ))}
+            </div>
+
+            {/* Topic + Generate */}
+            <div className="bg-surface rounded-2xl border border-outline-variant p-6 mb-6">
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                    <div className="flex-1 w-full">
+                        <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider">
+                            Topic (optional)
+                        </label>
+                        <select
+                            value={topic}
+                            onChange={(e) => setTopic(e.target.value)}
+                            className="w-full rounded-xl border border-outline-variant bg-surface-container-low text-on-surface px-4 py-3 outline-none focus:ring-2 focus:ring-primary-fixed-dim transition-all"
+                        >
+                            <option value="">— All topics / Général —</option>
+                            {currentTopics.map((t, i) => (
+                                <option key={i} value={t}>{t}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <button
+                        onClick={generate}
+                        disabled={loading}
+                        className="shrink-0 bg-primary-container text-on-primary-container px-8 py-3 rounded-xl font-semibold hover:bg-primary-fixed transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        {loading ? (
+                            <><span className="material-symbols-outlined text-sm animate-spin">sync</span> Generating...</>
+                        ) : (
+                            <><span className="material-symbols-outlined text-sm">auto_awesome</span> Generate Exam</>
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+                <div className="bg-error-container text-on-error-container rounded-2xl border border-error p-4 mb-6">
+                    {error}
+                </div>
+            )}
+
+            {/* Result */}
+            {result && result.pairs && (
+                <div className="bg-surface rounded-2xl border border-outline-variant overflow-hidden">
+                    <div className="p-6 md:p-8">
+                        <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">
+                            {result.exam_title || `Examen de ${result.subject}`}
+                        </h2>
+
+                        <div className="space-y-4">
+                            {result.pairs.map((pair, idx) => (
+                                <div key={idx} className="bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden">
+                                    {/* Question */}
+                                    <div className="p-5 prose prose-sm max-w-none">
+                                        <style>{`
+                                            .katex { font-size: 1.1em; }
+                                            .katex-display { margin: 0.75rem 0; overflow-x: auto; }
+                                            .prose p { margin-bottom: 0.5rem; line-height: 1.6; color: #334155; }
+                                        `}</style>
+                                        <span className="inline-block bg-primary-container text-on-primary-container text-xs font-bold px-2 py-0.5 rounded-md mb-2">
+                                            {pair.question}
+                                        </span>
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkMath, remarkGfm]}
+                                            rehypePlugins={[rehypeKatex]}
+                                        >
+                                            {pair.question_text}
+                                        </ReactMarkdown>
+                                    </div>
+
+                                    {/* Correction toggle */}
+                                    <button
+                                        onClick={() => toggleCorr(idx)}
+                                        className="w-full flex items-center justify-between px-5 py-3 bg-surface hover:bg-surface-container-high transition-colors border-t border-outline-variant"
+                                    >
+                                        <span className="font-semibold text-sm text-on-surface-variant flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-sm">lightbulb</span>
+                                            Correction
+                                        </span>
+                                        <span className="material-symbols-outlined text-on-surface-variant text-sm transition-transform"
+                                            style={{ transform: expandedCorr[idx] ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                                            expand_more
+                                        </span>
                                     </button>
-<button className="px-4 py-2 rounded-full border border-outline-variant bg-surface text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
-                                        Algebraic Structures
-                                    </button>
-<button className="px-4 py-2 rounded-full border border-primary bg-primary-container/10 text-primary font-label-sm text-label-sm hover:bg-primary-container/20 transition-colors">
-                                        Geometry &amp; Vectors
-                                    </button>
-<button className="px-4 py-2 rounded-full border border-outline-variant bg-surface text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
-                                        Probability
-                                    </button>
-</div>
-</div>
-</div>
-</div>
-{/*  Difficulty Card  */}
-<div className="bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-outline-variant/30">
-<h3 className="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-secondary">trending_up</span>
-                            Difficulty Level
-                        </h3>
-<div className="flex flex-col sm:flex-row gap-4">
-<label className="flex-1 cursor-pointer">
-<input className="peer sr-only" name="difficulty" type="radio" value="easy" />
-<div className="p-4 rounded-xl border border-outline-variant peer-defaultChecked:border-secondary peer-defaultChecked:bg-secondary-container/20 transition-all text-center">
-<span className="block font-label-md text-label-md text-on-surface mb-1">Foundational</span>
-<span className="block font-label-sm text-label-sm text-on-surface-variant">Core concepts &amp; direct application</span>
-</div>
-</label>
-<label className="flex-1 cursor-pointer">
-<input defaultChecked="" className="peer sr-only" name="difficulty" type="radio" value="medium" />
-<div className="p-4 rounded-xl border border-outline-variant peer-defaultChecked:border-secondary peer-defaultChecked:bg-secondary-container/20 transition-all text-center">
-<span className="block font-label-md text-label-md text-on-surface mb-1">Standard</span>
-<span className="block font-label-sm text-label-sm text-on-surface-variant">Typical Baccalaureate level</span>
-</div>
-</label>
-<label className="flex-1 cursor-pointer">
-<input className="peer sr-only" name="difficulty" type="radio" value="hard" />
-<div className="p-4 rounded-xl border border-outline-variant peer-defaultChecked:border-secondary peer-defaultChecked:bg-secondary-container/20 transition-all text-center">
-<span className="block font-label-md text-label-md text-on-surface mb-1">Advanced</span>
-<span className="block font-label-sm text-label-sm text-on-surface-variant">Complex synthesis problems</span>
-</div>
-</label>
-</div>
-</div>
-{/*  Action Area  */}
-<div className="pt-4">
-<button className="w-full bg-primary-container text-on-primary-container font-headline-sm text-headline-sm py-4 rounded-xl shadow-sm hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
-<span className="material-symbols-outlined">generating_tokens</span>
-                            Generate Mock Exam
-                        </button>
-</div>
-</div>
-{/*  Right Column: Live Preview  */}
-<div className="lg:col-span-5 h-full">
-<div className="bg-surface-container-high rounded-xl p-card-padding shadow-inner h-full border border-surface-dim flex flex-col">
-<div className="flex justify-between items-center mb-6 border-b border-outline-variant/50 pb-4">
-<h3 className="font-headline-sm text-headline-sm text-on-surface">Blueprint Preview</h3>
-<div className="flex items-center gap-1 text-on-surface-variant bg-surface-container-lowest px-3 py-1 rounded-full text-label-sm font-label-sm shadow-sm">
-<span className="material-symbols-outlined text-[16px]">timer</span>
-                                Est: 120 mins
-                            </div>
-</div>
-<div className="flex-1 space-y-4 overflow-y-auto">
-{/*  Preview Section 1  */}
-<div className="bg-surface-container-lowest p-4 rounded-lg shadow-sm border border-outline-variant/30 relative overflow-hidden">
-<div className="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-<div className="flex justify-between items-start mb-2 pl-2">
-<h4 className="font-label-md text-label-md text-on-surface">Part I: Calculus Fundamentals</h4>
-<span className="text-label-sm font-label-sm text-tertiary">4 Exercises</span>
-</div>
-<p className="font-body-sm text-body-sm text-on-surface-variant pl-2">Focus on limits, derivatives, and basic integration techniques.</p>
-</div>
-{/*  Preview Section 2  */}
-<div className="bg-surface-container-lowest p-4 rounded-lg shadow-sm border border-outline-variant/30 relative overflow-hidden">
-<div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
-<div className="flex justify-between items-start mb-2 pl-2">
-<h4 className="font-label-md text-label-md text-on-surface">Part II: Analytic Geometry</h4>
-<span className="text-label-sm font-label-sm text-tertiary">2 Complex Problems</span>
-</div>
-<p className="font-body-sm text-body-sm text-on-surface-variant pl-2">Synthesis problems involving spatial vectors and coordinate geometry.</p>
-</div>
-{/*  Placeholder empty state  */}
-<div className="border-2 border-dashed border-outline-variant/50 rounded-lg p-6 text-center text-on-surface-variant flex flex-col items-center justify-center mt-4 opacity-50">
-<span className="material-symbols-outlined text-[32px] mb-2">add_circle</span>
-<p className="font-label-sm text-label-sm">Select more chapters to populate</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-        </>
+
+                                    {/* Correction content */}
+                                    {expandedCorr[idx] && (
+                                        <div className="px-5 pb-5 pt-3 bg-surface prose prose-sm max-w-none">
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkMath, remarkGfm]}
+                                                rehypePlugins={[rehypeKatex]}
+                                            >
+                                                {pair.correction}
+                                            </ReactMarkdown>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {!loading && result && result.error && (
+                <div className="bg-error-container text-on-error-container rounded-2xl border border-error p-4 mb-6">
+                    {result.error}
+                </div>
+            )}
+        </main>
     );
 }

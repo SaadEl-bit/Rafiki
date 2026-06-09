@@ -15,8 +15,10 @@
 | 💬 **Q&A Chat** | ✅ | Ask any question → RAG retrieves the relevant 2Bac course chunk → fine-tuned LLM generates a step-by-step answer. |
 | ✍️ **Exercise Correction** | ✅ | Upload a blank exercise OR one with answers → AI corrects it step by step. |
 | 📤 **Live OCR & Temporary RAG** | ✅ | Upload any PDF/Image. The backend extracts text using Vision LLMs and saves it in a temporary session memory. |
-| 📚 **Cadre Référenciel (الإطار المرجعي)** | 🔶 | UI exists, displays the official structured 2Bac curriculum info and learning objectives. |
-| 📝 **Generators (Exam, Exercise, Resume)** | 🔶 | UI exists, shows static placeholders — connected to AI post-MVP. |
+| 📚 **Cadre Référenciel (الإطار المرجعي)** | ✅ | Interactive tree of official 2Bac learning objectives with search and "Ask AI" per objective. |
+| 📖 **Course Notes Viewer** | ✅ | Full markdown/LaTeX viewer for 2Bac course notes with chapter navigation and KaTeX rendering. |
+| ✏️ **Exercise Generator** | ✅ | AI generates exercises by subject+topic with collapsible step-by-step solutions. |
+| 📝 **Exam Generator** | ✅ | AI generates full exams using real Bac JSON files as format reference. |
 
 ---
 
@@ -79,4 +81,5 @@ M3allem/
 - **Phase 3:** Q&A Dataset & LLM Fine-Tuning ✅
 - **Phase 4:** FastAPI Backend + Ephemeral Session RAG + OCR ✅
 - **Phase 5:** Next.js Frontend UI ✅
-- **Phase 6:** Full API Integration (Frontend talking to Backend) 🔄 *Up Next*
+- **Phase 6:** Full API Integration (Frontend talking to Backend) ✅
+- **Phase 7:** Cadre Référenciel, Course Notes, Exercise & Exam Generators ✅

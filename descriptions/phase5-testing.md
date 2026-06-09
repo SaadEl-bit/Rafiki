@@ -50,14 +50,19 @@ from kaggle_secrets import UserSecretsClient
 
 # 1. Load Secrets
 user_secrets = UserSecretsClient()
+github_email = user_secrets.get_secret("GITHUB_EMAIL")
 github_user = user_secrets.get_secret("GITHUB_USER")
 github_token = user_secrets.get_secret("GITHUB_TOKEN")
 hf_token = user_secrets.get_secret("HF_TOKEN")
 
 # 2. Securely clone your github repository
-repo_url = f"https://{github_token}@github.com/{github_user}/Rafiki.git"
+repo_url = f"https://{github_token}@github.com/{github_user}/M3allem.git"
 os.system(f"git clone {repo_url} app")
 os.chdir('/kaggle/working/app')
+
+# Set git identity (useful if you ever commit from Kaggle)
+os.system(f'git config user.email "{github_email}"')
+os.system(f'git config user.name "{github_user}"')
 
 # 3. Create .env file dynamically
 env_content = f"""
@@ -78,9 +83,29 @@ print(".env file created securely!")
 # 6. Install Localtunnel (to create a public URL)
 !npm install -g localtunnel
 
-# 7. Define model paths from Kaggle Dataset Input
-TEXT_MODEL_PATH = "/kaggle/input/rafiki-models/text-model"
-VISION_MODEL_PATH = "/kaggle/input/rafiki-models/vision-model"
+# 7. Discover & define model paths from Kaggle Dataset Input
+import os
+
+CANDIDATES = [
+    "/kaggle/input/rafiki-models",
+    "/kaggle/input/datasets/saadelouakate/rafiki-models",
+]
+DATASET_ROOT = next((p for p in CANDIDATES if os.path.isdir(p)), None)
+if DATASET_ROOT is None:
+    raise FileNotFoundError("Dataset 'rafiki-models' not found — add it in the Data panel.")
+
+def _find_subdir(base, name):
+    cand = os.path.join(base, name)
+    if os.path.isfile(os.path.join(cand, "config.json")):
+        return cand
+    for sub in sorted(os.listdir(cand)):
+        sp = os.path.join(cand, sub)
+        if os.path.isdir(sp) and os.path.isfile(os.path.join(sp, "config.json")):
+            return sp
+    return cand
+
+TEXT_MODEL_PATH = _find_subdir(DATASET_ROOT, "text-model")
+VISION_MODEL_PATH = _find_subdir(DATASET_ROOT, "vision-model")
 print(f"Text model path: {TEXT_MODEL_PATH}")
 print(f"Vision model path: {VISION_MODEL_PATH}")
 ```
@@ -99,10 +124,34 @@ Create a second code cell. This script will overwrite both `llm_service.py` and 
 ```python
 # CELL 2: Override Backend Services to Use Dual Kaggle GPUs
 
+# ── Discovered paths from CELL 1 ──────────────────────────────────
+# (re-run if paths are empty)
+import os
+CANDIDATES = [
+    "/kaggle/input/rafiki-models",
+    "/kaggle/input/datasets/saadelouakate/rafiki-models",
+]
+DATASET_ROOT = next((p for p in CANDIDATES if os.path.isdir(p)), None)
+if DATASET_ROOT is None:
+    raise FileNotFoundError("Dataset 'rafiki-models' not found.")
+
+def _find_subdir(base, name):
+    cand = os.path.join(base, name)
+    if os.path.isfile(os.path.join(cand, "config.json")):
+        return cand
+    for sub in sorted(os.listdir(cand)):
+        sp = os.path.join(cand, sub)
+        if os.path.isdir(sp) and os.path.isfile(os.path.join(sp, "config.json")):
+            return sp
+    return cand
+
+TEXT_MODEL_PATH = _find_subdir(DATASET_ROOT, "text-model")
+VISION_MODEL_PATH = _find_subdir(DATASET_ROOT, "vision-model")
+
 # ====================================================================
 # 1. OVERRIDE LLM SERVICE (TEXT MODEL ON GPU 0)
 # ====================================================================
-override_llm = """
+_LLM = r"""
 import os
 import logging
 import torch
@@ -110,14 +159,10 @@ from transformers import pipeline, BitsAndBytesConfig
 
 logger = logging.getLogger(__name__)
 
-# Load text model from Kaggle Dataset Input (no download needed!)
-TEXT_MODEL_PATH = "/kaggle/input/rafiki-models/text-model"
-
+TEXT_MODEL_PATH = "__TEXT_MODEL_PATH__"
 logger.info(f"Loading text model from {TEXT_MODEL_PATH} into GPU 0 in 4-bit...")
 
-# 4-bit Quantization to save massive amounts of VRAM!
 quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
-
 generator = pipeline("text-generation", model=TEXT_MODEL_PATH, device_map="cuda:0", model_kwargs={"quantization_config": quant_config})
 logger.info("Text Model loaded successfully in 4-bit!")
 
@@ -133,6 +178,7 @@ def correct_exercise(context: str, exercise_text: str) -> str:
     res = generator(prompt, max_new_tokens=2000, temperature=0.3)
     return res[0]['generated_text'].split("<|im_start|>assistant\n")[-1]
 """
+override_llm = _LLM.replace("__TEXT_MODEL_PATH__", TEXT_MODEL_PATH)
 with open("src/phase4_backend/services/llm_service.py", "w", encoding="utf-8") as f:
     f.write(override_llm)
 
@@ -140,7 +186,7 @@ with open("src/phase4_backend/services/llm_service.py", "w", encoding="utf-8") a
 # ====================================================================
 # 2. OVERRIDE EXTRACTION SERVICE (VISION MODEL ON GPU 1)
 # ====================================================================
-override_vision = """
+_VISION = r"""
 import logging
 from typing import List
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor, BitsAndBytesConfig
@@ -149,14 +195,10 @@ import torch
 
 logger = logging.getLogger(__name__)
 
-# Load vision model from Kaggle Dataset Input (no download needed!)
-VISION_MODEL_PATH = "/kaggle/input/rafiki-models/vision-model"
-
+VISION_MODEL_PATH = "__VISION_MODEL_PATH__"
 logger.info(f"Loading vision model from {VISION_MODEL_PATH} into GPU 1 in 4-bit...")
 
-# 4-bit Quantization to fit the massive Vision model inside the 15GB GPU!
 quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
-
 model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     VISION_MODEL_PATH, 
     quantization_config=quant_config, 
@@ -191,13 +233,13 @@ def extract_text_via_vl(base64_images: List[str]) -> str:
         ).to("cuda:1")
 
         generated_ids = model.generate(**inputs, max_new_tokens=2000)
-        generated_ids_trimmed = [out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids
-)]
+        generated_ids_trimmed = [out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)]
         output_text = processor.batch_decode(generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False)
         extracted_text += f"\n\n--- Page {idx+1} ---\n\n" + output_text[0]
         
     return extracted_text.strip()
 """
+override_vision = _VISION.replace("__VISION_MODEL_PATH__", VISION_MODEL_PATH)
 with open("src/phase4_backend/services/extraction_service.py", "w", encoding="utf-8") as f:
     f.write(override_vision)
 
@@ -213,9 +255,23 @@ Create the third code cell. This will start your FastAPI server in the backgroun
 
 ```python
 # CELL 3: Start Uvicorn and Localtunnel
-import subprocess
-import time
-import urllib.request
+import os, subprocess, time, urllib.request
+
+# ── Verify override files have valid model paths ────────────────────
+for fname, label in [("llm_service.py", "Text"), ("extraction_service.py", "Vision")]:
+    fpath = f"src/phase4_backend/services/{fname}"
+    if not os.path.isfile(fpath):
+        print(f"❌ Override file missing: {fpath} — run Cell 2 first!")
+        raise SystemExit(1)
+    with open(fpath) as f:
+        content = f.read()
+    for line in content.splitlines():
+        if "MODEL_PATH" in line and "=" in line and not line.strip().startswith("#"):
+            val = line.split("=", 1)[1].strip().strip('"').strip("'")
+            if os.path.isdir(val) or os.path.isfile(os.path.join(val, "config.json")):
+                print(f"  ✅ {label} model path OK: {val}")
+            else:
+                print(f"  ⚠️ {label} model path may be invalid: {val}")
 
 # 1. Start FastAPI server in the background
 print("Starting FastAPI Server...")

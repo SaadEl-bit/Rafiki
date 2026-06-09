@@ -41,6 +41,19 @@ def generate_answer(context: str, question: str, history: list = None) -> str:
 
     return response.choices[0].message.content
 
+def generate_content(context: str, instruction: str, system_prompt: str, max_tokens: int = 2000, temperature: float = 0.3) -> str:
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": f"Contexte du cours:\n{context}\n\n{instruction}"}
+    ]
+    response = client.chat_completion(
+        model=HF_MODEL_ID,
+        messages=messages,
+        max_tokens=max_tokens,
+        temperature=temperature,
+    )
+    return response.choices[0].message.content
+
 def correct_exercise(context: str, exercise_text: str) -> str:
     system_prompt = (
         "Vous êtes Rafiki, un professeur de Maths/Physique pour le Bac marocain (2ème Bac).\n\n"

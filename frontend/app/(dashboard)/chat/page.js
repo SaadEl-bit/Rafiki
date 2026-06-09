@@ -1,15 +1,44 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
-export default function PageContent() {
+function ChatContent() {
+    const searchParams = useSearchParams();
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: "Bonjour ! Je suis Rafiki, ton tuteur IA pour le Bac. Pose-moi une question sur le programme de Maths, Physique, ou Anglais !" }
+        { role: 'assistant', content: "Bonjour ! Je suis Rafiki, mon tuteur IA pour le Bac. Pose-moi une question sur le programme de Maths, Physique, ou Anglais !" }
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [sessionId, setSessionId] = useState(null);
     const [pendingDocumentText, setPendingDocumentText] = useState(null);
     const fileInputRef = useRef(null);
+    const initialQuestionSent = useRef(false);
+
+    useEffect(() => {
+        if (initialQuestionSent.current) return;
+        const q = searchParams.get('q');
+        const subject = searchParams.get('subject') || "Mathématiques";
+        if (q) {
+            initialQuestionSent.current = true;
+            const autoMsg = { role: 'user', content: q };
+            setMessages(prev => [...prev, autoMsg]);
+            setIsLoading(true);
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ask`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: q, subject, session_id: null })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setMessages(prev => [...prev, { role: 'assistant', content: data.answer }]);
+                if (data.session_id) setSessionId(data.session_id);
+            })
+            .catch(() => {
+                setMessages(prev => [...prev, { role: 'assistant', content: "Erreur de connexion au serveur." }]);
+            })
+            .finally(() => setIsLoading(false));
+        }
+    }, [searchParams]);
 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
@@ -181,5 +210,17 @@ export default function PageContent() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function PageContent() {
+    return (
+        <Suspense fallback={
+            <main className="flex-1 flex flex-col mx-8 mb-6 bg-surface-container-lowest rounded-3xl items-center justify-center">
+                <span className="material-symbols-outlined text-4xl text-on-surface-variant animate-spin">sync</span>
+            </main>
+        }>
+            <ChatContent />
+        </Suspense>
     );
 }
