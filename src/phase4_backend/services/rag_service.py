@@ -15,6 +15,12 @@ CHROMA_DB_DIR = os.getenv("CHROMA_DB_DIR", "./chroma_db_cache")
 _retriever = None
 _ephemeral_client = chromadb.Client()  # In-memory client for temporary RAG
 
+# In-memory conversation memory per session
+# { session_id: [{"role": "user"/"assistant", "content": "..."}] }
+_conversation_memory: dict[str, list[dict]] = {}
+MAX_HISTORY_PER_SESSION = 20
+MAX_SESSIONS = 500
+
 def get_retriever() -> RAGRetriever:
     global _retriever
     if _retriever is not None:
@@ -77,6 +83,28 @@ def add_to_session_rag(session_id: str, text: str, subject: str) -> None:
         ids=ids
     )
     logger.info(f"Added {len(chunks)} chunks to session {session_id}")
+
+def add_to_conversation(session_id: str, role: str, content: str) -> None:
+    if len(_conversation_memory) >= MAX_SESSIONS:
+        oldest = next(iter(_conversation_memory))
+        del _conversation_memory[oldest]
+        logger.warning(f"Conversation memory full, evicted session {oldest}")
+    if session_id not in _conversation_memory:
+        _conversation_memory[session_id] = []
+    _conversation_memory[session_id].append({"role": role, "content": content})
+    if len(_conversation_memory[session_id]) > MAX_HISTORY_PER_SESSION:
+        _conversation_memory[session_id] = _conversation_memory[session_id][-MAX_HISTORY_PER_SESSION:]
+
+def get_conversation_history(session_id: str, last_n: int = 6) -> list[dict]:
+    return _conversation_memory.get(session_id, [])[-last_n:]
+
+def session_exists(session_id: str) -> bool:
+    """Check if a session has uploaded document data in the ephemeral ChromaDB."""
+    try:
+        collection = _ephemeral_client.get_collection(name=f"session_{session_id}")
+        return collection.count() > 0
+    except Exception:
+        return False
 
 def retrieve_context(question: str, subject: str, session_id: Optional[str] = None) -> str:
     retriever = get_retriever()

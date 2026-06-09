@@ -9,4 +9,4 @@ class AskRequest(BaseModel):
 class CorrectRequest(BaseModel):
     exercise_text: str
     subject: str
-    session_id: Optional[str] = None
+    session_id: str  # Required: user must upload a document first
